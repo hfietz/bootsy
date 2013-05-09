@@ -1,0 +1,6 @@
+{
+  "name": "hfietz/bootsy",
+  "require": {
+    "symfony/symfony": "2.2.1"
+  }
+}
