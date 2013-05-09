@@ -14,10 +14,15 @@ by and by, to eventually provide the following functionality:
 
 * a database-backed user management with login, signup via email and password reset
 * a typical HTML base layout that works both for mobile and desktop browsing and contains
- ** one navigation bar
- ** a "session info box", i. e. a place where the login status is displayed and links to log in / log out / account settings reside
- ** a "CI box", where a logo, or a slogan, or a headline can be displayed
- ** a main content area
+
+    - one navigation bar
+
+    - a "session info box", i. e. a place where the login status is displayed and links to log in / log out / account settings reside
+
+    - a "CI box", where a logo, or a slogan, or a headline can be displayed
+
+    - a main content area
+
 * a set of CSS stylesheets, one each to
  ** reset all browser defaults
  ** position and size the above areas
