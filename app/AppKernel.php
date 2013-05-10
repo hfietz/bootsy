@@ -8,7 +8,7 @@ class AppKernel extends Kernel
   /**
    * Returns an array of bundles to registers.
    *
-   * @return BundleInterface[] An array of bundle instances.
+   * @return Symfony\Component\HttpKernel\Bundle\BundleInterface[] An array of bundle instances.
    *
    * @api
    */
@@ -18,6 +18,7 @@ class AppKernel extends Kernel
       new Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
       new Symfony\Bundle\SecurityBundle\SecurityBundle(),
       new Symfony\Bundle\TwigBundle\TwigBundle(),
+      new Hfietz\AccessBundle\HfietzAccessBundle(),
     );
 
     if (in_array($this->getEnvironment(), array('dev', 'test'))) {
