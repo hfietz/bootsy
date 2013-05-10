@@ -1,6 +1,11 @@
 {
   "name": "hfietz/bootsy",
+
   "require": {
     "symfony/symfony": "2.2.1"
+  },
+
+  "autoload": {
+    "psr-0": { "": "src/" }
   }
 }
