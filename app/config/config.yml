@@ -24,3 +24,9 @@ framework:
 twig:
     debug:            %kernel.debug%
     strict_variables: %kernel.debug%
+
+services:
+  kernel.listener.hfietz_error_listener:
+    class: Hfietz\ErrorBundle\EventListener\ErrorListener
+    tags:
+      - { name: kernel.event_listener, event: kernel.exception, method: onKernelException }
