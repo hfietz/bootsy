@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>{{ pageTitle }}</title>
+    <title>{{ pageTitle|default('Bootsy') }}</title>
 </head>
 <body>
     {% block login %}{% endblock %}
