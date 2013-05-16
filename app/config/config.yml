@@ -32,3 +32,11 @@ services:
       - { name: kernel.event_listener, event: kernel.exception, method: onKernelException }
   db_admin_frontend:
     class: Hfietz\DatabaseBundle\Controller\DbAdminController
+
+doctrine:
+  dbal:
+    driver: '%database_driver%'
+    host: '%database_host%'
+    dbname: '%database_name%'
+    user: '%database_user%'
+    password: '%database_password%'
