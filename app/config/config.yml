@@ -30,3 +30,5 @@ services:
     class: Hfietz\ErrorBundle\EventListener\ErrorListener
     tags:
       - { name: kernel.event_listener, event: kernel.exception, method: onKernelException }
+  db_admin_frontend:
+    class: Hfietz\DatabaseBundle\Controller\DbAdminController

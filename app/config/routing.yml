@@ -1,3 +1,7 @@
 login:
   path: /login
   defaults: { _controller: HfietzAccessBundle:Session:login }
+
+db_admin:
+  resource: "@HfietzDatabaseBundle/Resources/config/routing.yml"
+  prefix: /admin/db
