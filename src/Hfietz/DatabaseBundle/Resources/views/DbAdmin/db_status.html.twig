@@ -1,0 +1,14 @@
+{% extends '::base.html.twig' %}
+
+{%  block dialog %}
+    <h2>Database status: {{ dbStatus }}</h2>
+    <p class="{{ messageType }}">{{ message }}</p>
+    <h3>Parameters used:</h3>
+    <dl>
+        <dt>database driver</dt><dd>{{ dbDriver|default('n/a') }}</dd>
+        <dt>database name</dt><dd>{{ dbName|default('n/a') }}</dd>
+        <dt>database host</dt><dd>{{ dbHost|default('n/a') }}</dd>
+        <dt>database user</dt><dd>{{ dbUser|default('n/a') }}</dd>
+        <dt>database password</dt><dd>{{ dbPass|default('n/a') }}</dd>
+    </dl>
+{% endblock %}

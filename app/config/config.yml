@@ -32,6 +32,10 @@ services:
       - { name: kernel.event_listener, event: kernel.exception, method: onKernelException }
   db_admin_frontend:
     class: Hfietz\DatabaseBundle\Controller\DbAdminController
+    calls:
+      - [ setDbConnection, ["@database_connection"]]
+      - [ setTemplateEngine, ["@templating"]]
+      - [ setHttpKernel, ["@http_kernel"]]
 
 doctrine:
   dbal:
