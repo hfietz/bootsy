@@ -49,12 +49,9 @@ class DbAdminController
         throw new DatabaseException('Missing a connection object, something went wrong with the dependency injection.');
       }
 
-      $variables['dbDriver'] = $this->db_connection->getDriver()->getName();
-      $variables['dbName'] = $this->db_connection->getDatabase();
-      $variables['dbHost'] = $this->db_connection->getHost();
-      $variables['dbUser'] = $this->db_connection->getUsername();
-      $pass = $this->db_connection->getPassword();
-      $variables['dbPass'] = empty($pass) ? 'empty' : 'not disclosed';
+      $parameters = $this->get_database_params_for_status_report();
+
+      $variables['parameters'] = $parameters;
 
       if (FALSE === $this->db_connection->isConnected()) {
         $this->db_connection->connect(); // This is likely to throw an exception, otherwise we would probably be connected
@@ -110,5 +107,24 @@ class DbAdminController
       throw new Exception('Dependency injection failed: No template engine available.');
     }
     return $this->template_engine;
+  }
+
+  /**
+   * @param $parameters
+   * @return mixed
+   */
+  protected function get_database_params_for_status_report()
+  {
+    $parameters = array(
+      'database driver' => $this->db_connection->getDriver()->getName(),
+      'database name' => $this->db_connection->getDatabase(),
+      'database host' => $this->db_connection->getHost(),
+      'database user' => $this->db_connection->getUsername(),
+    );
+
+    $pass = $this->db_connection->getPassword();
+    $parameters['database password'] = empty($pass) ? 'empty' : 'not disclosed';
+
+    return $parameters;
   }
 }
