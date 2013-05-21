@@ -6,10 +6,12 @@ use Exception;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 use Doctrine\DBAL\Connection;
 
 use Hfietz\DatabaseBundle\Exception\DatabaseException;
+use Symfony\Component\Yaml\Yaml;
 
 class DbAdminController
 {
@@ -27,6 +29,11 @@ class DbAdminController
    * @var HttpKernelInterface
    */
   protected $http_kernel;
+
+  /**
+   * @var KernelInterface
+   */
+  protected $kernel;
 
   public function versionsAction()
   {
@@ -55,6 +62,8 @@ class DbAdminController
     }
 
     $variables['parameters'] = $this->get_database_params_for_status_report();
+
+    $variables['config'] = $this->get_database_config_for_status_report();
 
     return $this->getTemplateEngine()->renderResponse('HfietzDatabaseBundle:DbAdmin:db_status.html.twig', $variables);
   }
@@ -140,5 +149,33 @@ class DbAdminController
     }
 
     return $success;
+  }
+
+  protected function get_database_config_for_status_report()
+  {
+    $path = 'config/parameters.yml';
+    $yaml = Yaml::parse(file_get_contents($this->kernel->getRootDir() . '/' . $path));
+    $config = array(
+      'file' => $path,
+      'parameters' => array(
+        'database driver' => $yaml['parameters']['database_driver'],
+        'database name' => $yaml['parameters']['database_name'],
+        'database host' => $yaml['parameters']['database_host'],
+        'database user' => $yaml['parameters']['database_user'],
+      ),
+    );
+
+    $pass = $yaml['parameters']['database_password'];
+    $config['parameters']['database password'] = empty($pass) ? 'empty' : 'not disclosed';
+
+    return $config;
+  }
+
+  /**
+   * @param KernelInterface $kernel
+   */
+  public function setKernel($kernel)
+  {
+    $this->kernel = $kernel;
   }
 }

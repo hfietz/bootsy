@@ -4,13 +4,23 @@
     <h2>Database status: {{ dbStatus }}</h2>
     <p class="{{ messageType }}">{{ message }}</p>
     {%  if parameters is defined %}
-    <h3>Parameters used:</h3>
-    <dl>
-        {%  for name, value in parameters %}
-        <dt>{{ name }}</dt><dd>{{ value|default('n/a') }}</dd>
-        {% endfor %}
-    </dl>
+        <h3>Parameters used:</h3>
+        <dl>
+            {%  for name, value in parameters %}
+                <dt>{{ name }}</dt><dd>{{ value|default('n/a') }}</dd>
+            {% endfor %}
+        </dl>
     {%  else  %}
-    <p>The parameters that were used could not be determined.</p>
+        <p>The parameters that were used could not be determined.</p>
+    {%  endif %}
+    {%  if config is defined %}
+        <h3>Configuration in file &lt;kernel root dir&gt;/{{ config.file }}:</h3>
+        <dl>
+            {%  for name, value in config.parameters %}
+                <dt>{{ name }}</dt><dd>{{ value|default('n/a') }}</dd>
+            {% endfor %}
+        </dl>
+    {%  else  %}
+        <p>No configuration info is available</p>
     {%  endif %}
 {% endblock %}

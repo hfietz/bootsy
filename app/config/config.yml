@@ -36,6 +36,7 @@ services:
       - [ setDbConnection, ["@database_connection"]]
       - [ setTemplateEngine, ["@templating"]]
       - [ setHttpKernel, ["@http_kernel"]]
+      - [ setKernel, ["@kernel"]]
 
 doctrine:
   dbal:
