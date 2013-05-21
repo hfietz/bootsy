@@ -44,31 +44,17 @@ class DbAdminController
       'messageType' => 'message',
       'dbStatus' => 'unknown',
     );
-    try {
-      if (NULL === $this->db_connection) {
-        throw new DatabaseException('Missing a connection object, something went wrong with the dependency injection.');
-      }
 
-      $parameters = $this->get_database_params_for_status_report();
-
-      $variables['parameters'] = $parameters;
-
-      if (FALSE === $this->db_connection->isConnected()) {
-        $this->db_connection->connect(); // This is likely to throw an exception, otherwise we would probably be connected
-      }
-
-      if ($this->db_connection->isConnected()) {
-        $variables['message'] = 'DB connection is up';
-        $variables['messageType'] = 'success';
-        $variables['dbStatus'] = 'connected';
-      } else {
-        throw new DatabaseException('DB is not connected, but no error was thrown during connect.');
-      }
-    } catch (Exception $e) {
-      $variables['message'] = $e->getMessage();
+    if (FALSE === $this->verifyConnection($variables['message'])) {
       $variables['messageType'] = 'error';
       $variables['dbStatus'] = 'no connection';
+    } else {
+      $variables['message'] = 'DB connection is up';
+      $variables['messageType'] = 'success';
+      $variables['dbStatus'] = 'connected';
     }
+
+    $variables['parameters'] = $this->get_database_params_for_status_report();
 
     return $this->getTemplateEngine()->renderResponse('HfietzDatabaseBundle:DbAdmin:db_status.html.twig', $variables);
   }
@@ -115,6 +101,10 @@ class DbAdminController
    */
   protected function get_database_params_for_status_report()
   {
+    if (NULL === $this->db_connection) {
+      return NULL;
+    }
+
     $parameters = array(
       'database driver' => $this->db_connection->getDriver()->getName(),
       'database name' => $this->db_connection->getDatabase(),
@@ -126,5 +116,29 @@ class DbAdminController
     $parameters['database password'] = empty($pass) ? 'empty' : 'not disclosed';
 
     return $parameters;
+  }
+
+  protected function verifyConnection(&$message = NULL, &$error = NULL)
+  {
+    $success = TRUE;
+
+    try {
+      if (NULL === $this->db_connection) {
+        throw new DatabaseException('Missing a connection object, something went wrong with the dependency injection.');
+      }
+
+      if (FALSE === $this->db_connection->isConnected()) {
+        $this->db_connection->connect(); // This is likely to throw an exception, otherwise we would probably be connected
+        if (FALSE === $this->db_connection->isConnected()) {
+          throw new DatabaseException('DB is not connected, but no error was thrown during connect.');
+        }
+      }
+    } catch (Exception $e) {
+      $success = FALSE;
+      $message = $e->getMessage();
+      $error = $e;
+    }
+
+    return $success;
   }
 }
