@@ -42,7 +42,7 @@ class DatabaseConfiguration
       'database name' => $this->databaseName,
       'database host' => $this->host,
       'database user' => $this->user,
-      'database password' => empty($pass) ? 'empty' : 'not disclosed',
+      'database password' => empty($this->password) ? 'empty' : 'not disclosed',
     );
   }
 
