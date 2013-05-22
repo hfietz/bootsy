@@ -18,7 +18,7 @@
         {% if config.form is defined %}
         <form action="{{ path('db_configure') }}" method="post" {{  form_enctype(config.form) }}>
             {{ form_widget(config.form) }}
-            <input type="submit" />
+            <input type="submit" value="Save" />
         </form>
         {% else %}
         <dl>
