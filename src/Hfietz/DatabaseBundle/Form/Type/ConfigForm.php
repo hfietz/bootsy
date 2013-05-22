@@ -13,7 +13,7 @@ class ConfigForm extends AbstractType
   {
     $this->addFields($builder, array('driverPrevious', 'namePrevious', 'hostPrevious', 'userPrevious'), 'hidden');
 
-    $this->addLabelledFields($builder, array(
+    $this->addFields($builder, array(
       'driver' => 'database driver',
       'name' => 'database name',
       'host' => 'database host',
@@ -21,10 +21,10 @@ class ConfigForm extends AbstractType
     ));
 
     if (!empty($pass)) {
-      $this->addLabelledFields($builder, array('currentPassword' =>'current password'), 'password');
+      $this->addFields($builder, array('currentPassword' =>'current password'), 'password');
     }
 
-    $this->addLabelledFields($builder, array('newPassword' => 'new password', 'newPasswordRepeat' => 'new password (repeat)'), 'password');
+    $this->addFields($builder, array('newPassword' => 'new password', 'newPasswordRepeat' => 'new password (repeat)'), 'password');
   }
 
   /**
@@ -46,27 +46,28 @@ class ConfigForm extends AbstractType
 
   /**
    * @param FormBuilderInterface $builder
-   * @param $fields
-   * @param $type
-   * @void
+   * @param array $fields
+   * @param string $type
+   * @param array $options
+   * @return void
    */
-  public function addFields(FormBuilderInterface $builder, $fields, $type = 'text')
+  public function addFields(FormBuilderInterface $builder, $fields, $type = 'text', $options = array())
   {
-    foreach ($fields as $name) {
-      $builder->add($name, $type);
+    foreach ($fields as $name => $label) {
+      if (is_numeric($name)) {
+        $name = $label;
+        $label = $this->createAutoLabelFromName($name);
+      }
+      $builder->add($name, $type, array_merge($options, array('label' => $label)));
     }
   }
 
   /**
-   * @param FormBuilderInterface $builder
-   * @param $fields
-   * @param $type
-   * @return array
+   * @param $name
+   * @return string
    */
-  public function addLabelledFields(FormBuilderInterface $builder, $fields, $type = 'text', $options = array())
+  protected function createAutoLabelFromName($name)
   {
-    foreach ($fields as $name => $label) {
-      $builder->add($name, $type, array_merge($options, array('label' => $label)));
-    }
+    return ucfirst(strtolower(str_replace('_', '', $name)));
   }
 }
