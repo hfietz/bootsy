@@ -60,30 +60,15 @@ class DbAdminController
 
   public function statusAction()
   {
-    $variables = array(
-      'message' => 'Checking DB status...',
-      'messageType' => 'message',
-      'dbStatus' => 'unknown',
-    );
-
-    if (FALSE === $this->verifyConnection($variables['message'])) {
-      $variables['messageType'] = 'error';
-      $variables['dbStatus'] = 'no connection';
-    } else {
-      $variables['message'] = 'DB connection is up';
-      $variables['messageType'] = 'success';
-      $variables['dbStatus'] = 'connected';
-    }
-
-    $variables['parameters'] = DatabaseConfiguration::fromConnection($this->db_connection);
-
-    $variables['config'] = $this->getConfigReport();
+    $variables = $this->getVariablesForStatusReport();
 
     return $this->getTemplateEngine()->renderResponse('HfietzDatabaseBundle:DbAdmin:db_status.html.twig', $variables);
   }
 
   public function configureAction(Request $req)
   {
+    $response = new RedirectResponse($this->router->generate('db_status'));
+
     $formData = new ConfigFormData();
 
     $form = $this->formFactory->create(new ConfigForm(), $formData);
@@ -96,11 +81,15 @@ class DbAdminController
         $config = $formData->toConfig();
         $this->saveConfig($config);
       } else {
-        // TODO
+        $variables = $this->getVariablesForStatusReport();
+
+        $variables['config']['form'] = $form->createView();
+
+        $response = $this->getTemplateEngine()->renderResponse('HfietzDatabaseBundle:DbAdmin:db_status.html.twig', $variables);
       }
     }
 
-    return new RedirectResponse($this->router->generate('db_status'));
+    return $response;
   }
 
   /**
@@ -222,7 +211,9 @@ class DbAdminController
     $parameters['database_name'] = $config->databaseName;
     $parameters['database_host'] = $config->host;
     $parameters['database_user'] = $config->user;
-    $parameters['database_password'] = $config->password;
+    if (!empty($config->password)) {
+      $parameters['database_password'] = $config->password;
+    }
 
     $this->writeParsedYaml($yaml);
   }
@@ -252,5 +243,31 @@ class DbAdminController
   {
     $data = Yaml::dump($yaml);
     file_put_contents($this->getConfigFilePath(), $data);
+  }
+
+  /**
+   * @return array
+   */
+  protected function getVariablesForStatusReport()
+  {
+    $variables = array(
+      'message' => 'Checking DB status...',
+      'messageType' => 'message',
+      'dbStatus' => 'unknown',
+    );
+
+    if (FALSE === $this->verifyConnection($variables['message'])) {
+      $variables['messageType'] = 'error';
+      $variables['dbStatus'] = 'no connection';
+    } else {
+      $variables['message'] = 'DB connection is up';
+      $variables['messageType'] = 'success';
+      $variables['dbStatus'] = 'connected';
+    }
+
+    $variables['parameters'] = DatabaseConfiguration::fromConnection($this->db_connection);
+
+    $variables['config'] = $this->getConfigReport();
+    return $variables;
   }
 }

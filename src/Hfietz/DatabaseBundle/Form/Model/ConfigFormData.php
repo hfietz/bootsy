@@ -3,6 +3,7 @@
 namespace Hfietz\DatabaseBundle\Form\Model;
 
 use Hfietz\DatabaseBundle\Model\DatabaseConfiguration;
+use Symfony\Component\Validator\ExecutionContextInterface;
 
 class ConfigFormData
 {
@@ -38,6 +39,7 @@ class ConfigFormData
     $formData->name = $config->databaseName;
     $formData->host = $config->host;
     $formData->user = $config->user;
+    // The existing password is not part of the form.
     
     return $formData;
   }
@@ -53,7 +55,17 @@ class ConfigFormData
     $config->databaseName = $this->name;
     $config->host = $this->host;
     $config->user = $this->user;
+    if (!empty($this->newPassword)) {
+      $config->password = $this->newPassword;
+    }
 
     return $config;
+  }
+
+  public function checkNewPasswordForTypos(ExecutionContextInterface $context)
+  {
+    if (!empty($this->newPassword) && $this->newPassword != $this->newPasswordRepeat) {
+      $context->addViolationAt('newPasswordRepeat', 'You have to enter the new password twice to avoid typos. The two values you entered did not match.');
+    }
   }
 }
