@@ -15,11 +15,18 @@
     {%  endif %}
     {%  if config is defined %}
         <h3>Configuration in file &lt;kernel root dir&gt;/{{ config.file }}:</h3>
+        {% if config.form is defined %}
+        <form action="{{ path('db_configure') }}" method="post" {{  form_enctype(config.form) }}>
+            {{ form_widget(config.form) }}
+            <input type="submit" />
+        </form>
+        {% else %}
         <dl>
             {%  for name, value in config.parameters %}
                 <dt>{{ name }}</dt><dd>{{ value|default('n/a') }}</dd>
             {% endfor %}
         </dl>
+        {% endif %}
     {%  else  %}
         <p>No configuration info is available</p>
     {%  endif %}

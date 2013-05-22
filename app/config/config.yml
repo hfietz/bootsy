@@ -35,8 +35,9 @@ services:
     calls:
       - [ setDbConnection, ["@database_connection"]]
       - [ setTemplateEngine, ["@templating"]]
-      - [ setHttpKernel, ["@http_kernel"]]
+      - [ setRouter, ["@router"]]
       - [ setKernel, ["@kernel"]]
+      - [ setFormFactory, ["@form.factory"]]
 
 doctrine:
   dbal:

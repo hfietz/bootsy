@@ -3,15 +3,21 @@ namespace Hfietz\DatabaseBundle\Controller;
 
 use Exception;
 
+use Hfietz\DatabaseBundle\Form\Model\ConfigFormData;
+use Hfietz\DatabaseBundle\Form\Type\ConfigForm;
+use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
+use Symfony\Component\Form\FormFactoryInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
+use Symfony\Component\Yaml\Yaml;
 
 use Doctrine\DBAL\Connection;
 
 use Hfietz\DatabaseBundle\Exception\DatabaseException;
-use Symfony\Component\Yaml\Yaml;
 
 class DbAdminController
 {
@@ -26,14 +32,19 @@ class DbAdminController
   protected $template_engine;
 
   /**
-   * @var HttpKernelInterface
-   */
-  protected $http_kernel;
-
-  /**
    * @var KernelInterface
    */
   protected $kernel;
+
+  /**
+   * @var Router
+   */
+  protected $router;
+
+  /**
+   * @var FormFactoryInterface
+   */
+  protected $formFactory;
 
   public function versionsAction()
   {
@@ -68,6 +79,25 @@ class DbAdminController
     return $this->getTemplateEngine()->renderResponse('HfietzDatabaseBundle:DbAdmin:db_status.html.twig', $variables);
   }
 
+  public function configureAction(Request $req)
+  {
+    $config = new ConfigFormData();
+
+    $form = $this->formFactory->create(new ConfigForm(), $config);
+
+    if ($req->isMethod('POST')) {
+      $form->bind($req);
+
+      if ($form->isValid()) {
+        // TODO
+      } else {
+        // TODO
+      }
+    }
+
+    return new RedirectResponse($this->router->generate('db_status'));
+  }
+
   /**
    * @param Connection $db_connection
    */
@@ -82,14 +112,6 @@ class DbAdminController
   public function setTemplateEngine($template_engine)
   {
     $this->template_engine = $template_engine;
-  }
-
-  /**
-   * @param HttpKernelInterface $http_kernel
-   */
-  public function setHttpKernel($http_kernel)
-  {
-    $this->http_kernel = $http_kernel;
   }
 
   /**
@@ -168,6 +190,18 @@ class DbAdminController
     $pass = $yaml['parameters']['database_password'];
     $config['parameters']['database password'] = empty($pass) ? 'empty' : 'not disclosed';
 
+    $dbConfig = new ConfigFormData();
+    $dbConfig->driverPrevious = $dbConfig->driver = $yaml['parameters']['database_driver'];
+    $dbConfig->namePrevious = $dbConfig->name = $yaml['parameters']['database_name'];
+    $dbConfig->hostPrevious = $dbConfig->host = $yaml['parameters']['database_host'];
+    $dbConfig->userPrevious = $dbConfig->user = $yaml['parameters']['database_user'];
+
+    $options = array();
+
+    $form = $this->formFactory->create(new ConfigForm(), $dbConfig, $options);
+
+    $config['form'] = $form->createView();
+
     return $config;
   }
 
@@ -177,5 +211,21 @@ class DbAdminController
   public function setKernel($kernel)
   {
     $this->kernel = $kernel;
+  }
+
+  /**
+   * @param mixed $router
+   */
+  public function setRouter($router)
+  {
+    $this->router = $router;
+  }
+
+  /**
+   * @param FormFactoryInterface $formFactory
+   */
+  public function setFormFactory($formFactory)
+  {
+    $this->formFactory = $formFactory;
   }
 }
