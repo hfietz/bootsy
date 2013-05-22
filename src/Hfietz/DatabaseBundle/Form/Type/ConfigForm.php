@@ -11,19 +11,20 @@ class ConfigForm extends AbstractType
 {
   public function buildForm(FormBuilderInterface $builder, array $options)
   {
-    foreach (array('driverPrevious', 'namePrevious', 'hostPrevious', 'userPrevious') as $name) {
-      $builder->add($name, 'hidden');
-    }
-    foreach (array('driver', 'name', 'host', 'user') as $name) {
-      $builder->add($name, 'text');
-    }
+    $this->addFields($builder, array('driverPrevious', 'namePrevious', 'hostPrevious', 'userPrevious'), 'hidden');
+
+    $this->addLabelledFields($builder, array(
+      'driver' => 'database driver',
+      'name' => 'database name',
+      'host' => 'database host',
+      'user' => 'database user',
+    ));
 
     if (!empty($pass)) {
-      $builder->add('currentPassword', 'password');
+      $this->addLabelledFields($builder, array('currentPassword' =>'current password'), 'password');
     }
-    foreach (array('newPassword', 'newPasswordRepeat') as $name) {
-      $builder->add($name, 'password');
-    }
+
+    $this->addLabelledFields($builder, array('newPassword' => 'new password', 'newPasswordRepeat' => 'new password (repeat)'), 'password');
   }
 
   /**
@@ -41,5 +42,31 @@ class ConfigForm extends AbstractType
     $resolver->setDefaults(array(
       'data_class' => ConfigFormData::getClassName(), // this makes the class visible to the IDE, so it is refactorable, which a string literal would not be.
     ));
+  }
+
+  /**
+   * @param FormBuilderInterface $builder
+   * @param $fields
+   * @param $type
+   * @void
+   */
+  public function addFields(FormBuilderInterface $builder, $fields, $type = 'text')
+  {
+    foreach ($fields as $name) {
+      $builder->add($name, $type);
+    }
+  }
+
+  /**
+   * @param FormBuilderInterface $builder
+   * @param $fields
+   * @param $type
+   * @return array
+   */
+  public function addLabelledFields(FormBuilderInterface $builder, $fields, $type = 'text', $options = array())
+  {
+    foreach ($fields as $name => $label) {
+      $builder->add($name, $type, array_merge($options, array('label' => $label)));
+    }
   }
 }
