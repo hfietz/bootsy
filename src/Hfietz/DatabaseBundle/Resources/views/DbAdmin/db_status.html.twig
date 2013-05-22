@@ -6,7 +6,7 @@
     {%  if parameters is defined %}
         <h3>Parameters used:</h3>
         <dl>
-            {%  for name, value in parameters %}
+            {%  for name, value in parameters.view %}
                 <dt>{{ name }}</dt><dd>{{ value|default('n/a') }}</dd>
             {% endfor %}
         </dl>
@@ -22,7 +22,7 @@
         </form>
         {% else %}
         <dl>
-            {%  for name, value in config.parameters %}
+            {%  for name, value in config.parameters.view %}
                 <dt>{{ name }}</dt><dd>{{ value|default('n/a') }}</dd>
             {% endfor %}
         </dl>

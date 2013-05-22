@@ -24,7 +24,7 @@ class ConfigForm extends AbstractType
       $this->addFields($builder, array('currentPassword' =>'current password'), 'password');
     }
 
-    $this->addFields($builder, array('newPassword' => 'new password', 'newPasswordRepeat' => 'new password (repeat)'), 'password');
+    $this->addFields($builder, array('newPassword' => 'new password', 'newPasswordRepeat' => 'new password (repeat)'), 'password', array('required' => FALSE));
   }
 
   /**

@@ -5,6 +5,7 @@ use Exception;
 
 use Hfietz\DatabaseBundle\Form\Model\ConfigFormData;
 use Hfietz\DatabaseBundle\Form\Type\ConfigForm;
+use Hfietz\DatabaseBundle\Model\DatabaseConfiguration;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\Form\FormFactoryInterface;
@@ -19,8 +20,10 @@ use Doctrine\DBAL\Connection;
 
 use Hfietz\DatabaseBundle\Exception\DatabaseException;
 
+// TODO: secure those methods / routes
 class DbAdminController
 {
+  protected $parametersFilePath = 'config/parameters.yml';
   /**
    * @var Connection
    */
@@ -72,24 +75,26 @@ class DbAdminController
       $variables['dbStatus'] = 'connected';
     }
 
-    $variables['parameters'] = $this->get_database_params_for_status_report();
+    $variables['parameters'] = DatabaseConfiguration::fromConnection($this->db_connection);
 
-    $variables['config'] = $this->get_database_config_for_status_report();
+    $variables['config'] = $this->getConfigReport();
 
     return $this->getTemplateEngine()->renderResponse('HfietzDatabaseBundle:DbAdmin:db_status.html.twig', $variables);
   }
 
   public function configureAction(Request $req)
   {
-    $config = new ConfigFormData();
+    $formData = new ConfigFormData();
 
-    $form = $this->formFactory->create(new ConfigForm(), $config);
+    $form = $this->formFactory->create(new ConfigForm(), $formData);
 
     if ($req->isMethod('POST')) {
       $form->bind($req);
 
+      // TODO: validation
       if ($form->isValid()) {
-        // TODO
+        $config = $formData->toConfig();
+        $this->saveConfig($config);
       } else {
         // TODO
       }
@@ -126,29 +131,6 @@ class DbAdminController
     return $this->template_engine;
   }
 
-  /**
-   * @param $parameters
-   * @return mixed
-   */
-  protected function get_database_params_for_status_report()
-  {
-    if (NULL === $this->db_connection) {
-      return NULL;
-    }
-
-    $parameters = array(
-      'database driver' => $this->db_connection->getDriver()->getName(),
-      'database name' => $this->db_connection->getDatabase(),
-      'database host' => $this->db_connection->getHost(),
-      'database user' => $this->db_connection->getUsername(),
-    );
-
-    $pass = $this->db_connection->getPassword();
-    $parameters['database password'] = empty($pass) ? 'empty' : 'not disclosed';
-
-    return $parameters;
-  }
-
   protected function verifyConnection(&$message = NULL, &$error = NULL)
   {
     $success = TRUE;
@@ -173,36 +155,24 @@ class DbAdminController
     return $success;
   }
 
-  protected function get_database_config_for_status_report()
+  protected function getConfigReport()
   {
-    $path = 'config/parameters.yml';
-    $yaml = Yaml::parse(file_get_contents($this->kernel->getRootDir() . '/' . $path));
-    $config = array(
-      'file' => $path,
-      'parameters' => array(
-        'database driver' => $yaml['parameters']['database_driver'],
-        'database name' => $yaml['parameters']['database_name'],
-        'database host' => $yaml['parameters']['database_host'],
-        'database user' => $yaml['parameters']['database_user'],
-      ),
+    $config = $this->loadConfig();
+
+    $report = array(
+      'file' => $this->parametersFilePath,
+      'parameters' => $config,
     );
 
-    $pass = $yaml['parameters']['database_password'];
-    $config['parameters']['database password'] = empty($pass) ? 'empty' : 'not disclosed';
-
-    $dbConfig = new ConfigFormData();
-    $dbConfig->driverPrevious = $dbConfig->driver = $yaml['parameters']['database_driver'];
-    $dbConfig->namePrevious = $dbConfig->name = $yaml['parameters']['database_name'];
-    $dbConfig->hostPrevious = $dbConfig->host = $yaml['parameters']['database_host'];
-    $dbConfig->userPrevious = $dbConfig->user = $yaml['parameters']['database_user'];
+    $formData = ConfigFormData::fromConfig($config);
 
     $options = array();
 
-    $form = $this->formFactory->create(new ConfigForm(), $dbConfig, $options);
+    $form = $this->formFactory->create(new ConfigForm(), $formData, $options);
 
-    $config['form'] = $form->createView();
+    $report['form'] = $form->createView();
 
-    return $config;
+    return $report;
   }
 
   /**
@@ -227,5 +197,60 @@ class DbAdminController
   public function setFormFactory($formFactory)
   {
     $this->formFactory = $formFactory;
+  }
+
+  /**
+   * @return DatabaseConfiguration|null
+   */
+  protected function loadConfig()
+  {
+    $yaml = $this->loadParsedYaml();
+
+    $config = DatabaseConfiguration::fromParsedYaml($yaml);
+    return $config;
+  }
+
+  /**
+   * @param DatabaseConfiguration $config
+   */
+  protected function saveConfig(DatabaseConfiguration $config)
+  {
+    $yaml = $this->loadParsedYaml();
+
+    $parameters =& $yaml['parameters'];
+    $parameters['database_driver'] = $config->driverName;
+    $parameters['database_name'] = $config->databaseName;
+    $parameters['database_host'] = $config->host;
+    $parameters['database_user'] = $config->user;
+    $parameters['database_password'] = $config->password;
+
+    $this->writeParsedYaml($yaml);
+  }
+
+  /**
+   * @return string
+   */
+  protected function getConfigFilePath()
+  {
+    return $this->kernel->getRootDir() . '/' . $this->parametersFilePath;
+  }
+
+  /**
+   * @return array
+   */
+  protected function loadParsedYaml()
+  {
+    $yaml = Yaml::parse(file_get_contents($this->getConfigFilePath()));
+    return $yaml;
+  }
+
+  /**
+   * @param array $yaml
+   * @void
+   */
+  protected function writeParsedYaml($yaml)
+  {
+    $data = Yaml::dump($yaml);
+    file_put_contents($this->getConfigFilePath(), $data);
   }
 }

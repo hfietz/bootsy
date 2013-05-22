@@ -5,3 +5,7 @@ db_versions:
 db_status:
   path: /status
   defaults: { _controller: db_admin_frontend:statusAction }
+
+db_configure:
+  path: /configure
+  defaults: { _controller: db_admin_frontend:configureAction }
