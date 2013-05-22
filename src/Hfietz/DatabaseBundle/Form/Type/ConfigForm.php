@@ -11,18 +11,12 @@ class ConfigForm extends AbstractType
 {
   public function buildForm(FormBuilderInterface $builder, array $options)
   {
-    $this->addFields($builder, array('driverPrevious', 'namePrevious', 'hostPrevious', 'userPrevious'), 'hidden');
-
     $this->addFields($builder, array(
       'driver' => 'database driver',
       'name' => 'database name',
       'host' => 'database host',
       'user' => 'database user',
     ));
-
-    if (!empty($pass)) {
-      $this->addFields($builder, array('currentPassword' =>'current password'), 'password');
-    }
 
     $this->addFields($builder, array('newPassword' => 'new password', 'newPasswordRepeat' => 'new password (repeat)'), 'password', array('required' => FALSE));
   }

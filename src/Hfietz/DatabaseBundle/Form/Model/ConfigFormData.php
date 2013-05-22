@@ -7,18 +7,13 @@ use Hfietz\DatabaseBundle\Model\DatabaseConfiguration;
 class ConfigFormData
 {
   public $driver;
-  public $driverPrevious;
 
   public $host;
-  public $hostPrevious;
 
   public $name;
-  public $namePrevious;
 
   public $user;
-  public $userPrevious;
 
-  public $currentPassword;
   public $newPassword;
   public $newPasswordRepeat;
 
@@ -39,10 +34,10 @@ class ConfigFormData
     }
     
     $formData = new ConfigFormData();
-    $formData->driverPrevious = $formData->driver = $config->driverName;
-    $formData->namePrevious = $formData->name = $config->databaseName;
-    $formData->hostPrevious = $formData->host = $config->host;
-    $formData->userPrevious = $formData->user = $config->user;
+    $formData->driver = $config->driverName;
+    $formData->name = $config->databaseName;
+    $formData->host = $config->host;
+    $formData->user = $config->user;
     
     return $formData;
   }
@@ -58,7 +53,7 @@ class ConfigFormData
     $config->databaseName = $this->name;
     $config->host = $this->host;
     $config->user = $this->user;
-    
+
     return $config;
   }
 }
