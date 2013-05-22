@@ -1,6 +1,9 @@
 <?php
 namespace Hfietz\DatabaseBundle\Controller;
 
+use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Schema\Table;
+use Doctrine\DBAL\Types\Type;
 use Exception;
 
 use Hfietz\DatabaseBundle\Form\Model\ConfigFormData;
@@ -51,10 +54,27 @@ class DbAdminController
 
   public function versionsAction()
   {
-    if ($this->db_connection->isConnected()) {
-      return new Response('<h1>Hi, this is the DB versions page, we\'re not quite ready yet</h1>');
-    } else {
+    if (FALSE === $this->verifyConnection()) {
       return $this->statusAction(); // TODO: Investigate: How will forwarding be handled in 2.3? Are there any issues forwarding like this?
+    } else {
+      $sm = $this->db_connection->getSchemaManager();
+      $versionsTable = 'meta.versions';
+      if (FALSE === $sm->tablesExist(array($versionsTable))) {
+        $table = new Table($versionsTable);
+        $table->addColumn('id', Type::INTEGER, array('autoincrement' => TRUE));
+        $table->setPrimaryKey(array('id'));
+        try {
+          $sm->createTable($table);
+        } catch (DBALException $e) {
+          $cause = $e->getPrevious();
+          if (is_a($cause, 'PDOException') && $cause->getCode() === '3F000') {
+            $sql = 'CREATE SCHEMA ' . $table->getNamespaceName();
+            $this->db_connection->exec($sql);
+            $sm->createTable($table);
+          }
+        }
+      }
+      return new Response('<h1>Hi, this is the DB versions page, we\'re not quite ready yet</h1>');
     }
   }
 
@@ -130,7 +150,7 @@ class DbAdminController
       }
 
       if (FALSE === $this->db_connection->isConnected()) {
-        $this->db_connection->connect(); // This is likely to throw an exception, otherwise we would probably be connected
+        $this->db_connection->connect();
         if (FALSE === $this->db_connection->isConnected()) {
           throw new DatabaseException('DB is not connected, but no error was thrown during connect.');
         }
