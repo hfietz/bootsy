@@ -67,6 +67,7 @@ class DbAdminController
   {
     /**
      * @var Statement $stmt
+     * @var ScriptRun[] $updatesRun
      * @var Script[] $updatesAvailable
      */
     if (FALSE === $this->verifyConnection()) {
@@ -75,17 +76,18 @@ class DbAdminController
       $sm = $this->db_connection->getSchemaManager();
       $table = $this->getVersionsTable($sm);
       $qb = $this->db_connection->createQueryBuilder();
-      $stmt = $qb->select('filePath', 'hash', 'timestamp')->from($table->getName(), 'v')->execute();
+      $stmt = $qb->select('file_path', 'hash', 'timestamp')->from($table->getName(), 'v')->execute();
       $updatesRun = $stmt->fetchAll();
+      array_walk($updatesRun, function (&$data) {
+        $data = Hydrator::hydrate(new ScriptRun(), $data);
+      });
 
       $updatesAvailable = array();
       foreach ($this->getScriptPaths() as $path) {
         $updatesAvailable += $this->loadScripts($path);
       }
 
-      foreach ($updatesRun as $logData) {
-        $run = new ScriptRun();
-        Hydrator::hydrate($run, $logData);
+      foreach ($updatesRun as $run) {
         if (array_key_exists($run->filePath, $updatesAvailable)) {
           $updatesAvailable[$run->filePath]->addRun($run);
         }
@@ -342,7 +344,7 @@ class DbAdminController
   {
     $table = new Table($tableName);
     $table->addColumn('id', Type::INTEGER, array('autoincrement' => TRUE));
-    $table->addColumn('filePath', Type::STRING);
+    $table->addColumn('file_path', Type::STRING);
     $table->addColumn('hash', Type::STRING);
     $table->addColumn('timestamp', Type::DATETIME);
     $table->setPrimaryKey(array('id'));

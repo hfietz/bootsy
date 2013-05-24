@@ -7,6 +7,9 @@ class Hydrator
   public static function hydrate($object, $row, $mapping = array())
   {
     foreach ($row as $name => $value) {
+      $name = preg_replace_callback('/_([a-z])/', function ($matches) {
+        return strtoupper($matches[1]);
+      }, strtolower($name));
       if (FALSE === self::mapTo($object, $name, $value) && array_key_exists($name, $mapping)) {
         self::mapTo($object, $mapping[$name], $value);
       }
