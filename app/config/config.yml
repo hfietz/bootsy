@@ -30,14 +30,19 @@ services:
     class: Hfietz\ErrorBundle\EventListener\ErrorListener
     tags:
       - { name: kernel.event_listener, event: kernel.exception, method: onKernelException }
+  db_service:
+    class: Hfietz\DatabaseBundle\Service\DatabaseService
+    calls:
+      - [ setDbConnection, ["@database_connection"]]
+      - [ setKernel, ["@kernel"]]
+
   db_admin_frontend:
     class: Hfietz\DatabaseBundle\Controller\DbAdminController
     calls:
-      - [ setDbConnection, ["@database_connection"]]
       - [ setTemplateEngine, ["@templating"]]
       - [ setRouter, ["@router"]]
-      - [ setKernel, ["@kernel"]]
       - [ setFormFactory, ["@form.factory"]]
+      - [ setDatabaseService, ["@db_service"]]
 
 doctrine:
   dbal:
