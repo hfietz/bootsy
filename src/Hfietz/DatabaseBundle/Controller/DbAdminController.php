@@ -2,6 +2,8 @@
 namespace Hfietz\DatabaseBundle\Controller;
 
 use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Driver\Statement;
+use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Types\Type;
 use Exception;
@@ -9,8 +11,15 @@ use Exception;
 use Hfietz\DatabaseBundle\Form\Model\ConfigFormData;
 use Hfietz\DatabaseBundle\Form\Type\ConfigForm;
 use Hfietz\DatabaseBundle\Model\DatabaseConfiguration;
+use Hfietz\DatabaseBundle\Model\Script;
+use Hfietz\DatabaseBundle\Model\ScriptRun;
+use Hfietz\DatabaseBundle\Model\ScriptView;
+use Hfietz\DatabaseBundle\Service\Hydrator;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Finder\Finder;
+use Symfony\Component\Finder\SplFileInfo;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -26,6 +35,8 @@ use Hfietz\DatabaseBundle\Exception\DatabaseException;
 // TODO: secure those methods / routes
 class DbAdminController
 {
+  protected $scriptPaths = array();
+
   protected $parametersFilePath = 'config/parameters.yml';
   /**
    * @var Connection
@@ -54,27 +65,41 @@ class DbAdminController
 
   public function versionsAction()
   {
+    /**
+     * @var Statement $stmt
+     * @var Script[] $updatesAvailable
+     */
     if (FALSE === $this->verifyConnection()) {
       return $this->statusAction(); // TODO: Investigate: How will forwarding be handled in 2.3? Are there any issues forwarding like this?
     } else {
       $sm = $this->db_connection->getSchemaManager();
-      $versionsTable = 'meta.versions';
-      if (FALSE === $sm->tablesExist(array($versionsTable))) {
-        $table = new Table($versionsTable);
-        $table->addColumn('id', Type::INTEGER, array('autoincrement' => TRUE));
-        $table->setPrimaryKey(array('id'));
-        try {
-          $sm->createTable($table);
-        } catch (DBALException $e) {
-          $cause = $e->getPrevious();
-          if (is_a($cause, 'PDOException') && $cause->getCode() === '3F000') {
-            $sql = 'CREATE SCHEMA ' . $table->getNamespaceName();
-            $this->db_connection->exec($sql);
-            $sm->createTable($table);
-          }
+      $table = $this->getVersionsTable($sm);
+      $qb = $this->db_connection->createQueryBuilder();
+      $stmt = $qb->select('filePath', 'hash', 'timestamp')->from($table->getName(), 'v')->execute();
+      $updatesRun = $stmt->fetchAll();
+
+      $updatesAvailable = array();
+      foreach ($this->getScriptPaths() as $path) {
+        $updatesAvailable += $this->loadScripts($path);
+      }
+
+      foreach ($updatesRun as $logData) {
+        $run = new ScriptRun();
+        Hydrator::hydrate($run, $logData);
+        if (array_key_exists($run->filePath, $updatesAvailable)) {
+          $updatesAvailable[$run->filePath]->addRun($run);
         }
       }
-      return new Response('<h1>Hi, this is the DB versions page, we\'re not quite ready yet</h1>');
+
+      $versions = array();
+      foreach ($updatesAvailable as $script) {
+        $versions[] = new ScriptView($script);
+      }
+
+      $variables = array(
+        'versions' => $versions,
+      );
+      return $this->getTemplateEngine()->renderResponse('HfietzDatabaseBundle:DbAdmin:db_versions.html.twig', $variables);
     }
   }
 
@@ -289,5 +314,88 @@ class DbAdminController
 
     $variables['config'] = $this->getConfigReport();
     return $variables;
+  }
+
+  /**
+   * @param AbstractSchemaManager $schemaManager
+   * @return Table
+   */
+  protected function getVersionsTable($schemaManager)
+  {
+    $versionsTable = 'meta.updateScripts';
+
+    if (FALSE === $schemaManager->tablesExist(array($versionsTable))) {
+      $table = $this->initVersionsTable($schemaManager, $versionsTable);
+    } else {
+      $table = $schemaManager->listTableDetails($versionsTable);
+    }
+
+    return $table;
+  }
+
+  /**
+   * @param AbstractSchemaManager $schemaManager
+   * @param string $tableName
+   * @return Table
+   */
+  protected function initVersionsTable($schemaManager, $tableName)
+  {
+    $table = new Table($tableName);
+    $table->addColumn('id', Type::INTEGER, array('autoincrement' => TRUE));
+    $table->addColumn('filePath', Type::STRING);
+    $table->addColumn('hash', Type::STRING);
+    $table->addColumn('timestamp', Type::DATETIME);
+    $table->setPrimaryKey(array('id'));
+    try {
+      $schemaManager->createTable($table);
+    } catch (DBALException $e) {
+      $cause = $e->getPrevious();
+      if (is_a($cause, 'PDOException') && $cause->getCode() === '3F000') {
+        $sql = 'CREATE SCHEMA ' . $table->getNamespaceName();
+        $this->db_connection->exec($sql);
+        $schemaManager->createTable($table);
+      } else {
+        throw $e;
+      }
+    }
+    return $table;
+  }
+
+  public function getScriptPaths()
+  {
+    return $this->scriptPaths;
+  }
+
+  public function addScriptPath($path)
+  {
+    if (is_dir($this->getInstallationDir() . DIRECTORY_SEPARATOR . $path)) {
+      $this->scriptPaths[] = $path;
+    } else {
+      throw new Exception("Could not find directory '" . $path . "'");
+    }
+  }
+
+  protected function getInstallationDir()
+  {
+    return realpath($this->kernel->getRootDir() . DIRECTORY_SEPARATOR . '..');
+  }
+
+  protected function loadScripts($path)
+  {
+    /**
+     * @var SplFileInfo $file
+     */
+    $finder = new Finder();
+    $fs = new Filesystem();
+    if (!$fs->isAbsolutePath($path)) {
+      $path = realpath($this->getInstallationDir() . DIRECTORY_SEPARATOR . $path);
+    }
+
+    $scripts = array();
+    foreach ($finder->files()->in($path) as $file) {
+      $scripts[$file->getPathname()] = Script::fromFileInfo($file);
+    }
+
+    return $scripts;
   }
 }
