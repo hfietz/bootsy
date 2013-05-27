@@ -1,12 +1,12 @@
 <?php
 
-namespace Hfietz\ErrorBundle\EventListener;
+namespace Hfietz\ErrorBundle\Service;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Hfietz\ErrorBundle\Model\LoggedException;
 
-class ErrorListener implements EventSubscriberInterface
+class ErrorService implements EventSubscriberInterface
 {
   public static function getSubscribedEvents()
   {

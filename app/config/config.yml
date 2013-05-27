@@ -26,10 +26,11 @@ twig:
     strict_variables: %kernel.debug%
 
 services:
-  kernel.listener.hfietz_error_listener:
-    class: Hfietz\ErrorBundle\EventListener\ErrorListener
+  error_service:
+    class: Hfietz\ErrorBundle\Service\ErrorService
     tags:
       - { name: kernel.event_listener, event: kernel.exception, method: onKernelException }
+
   db_service:
     class: Hfietz\DatabaseBundle\Service\DatabaseService
     calls:
