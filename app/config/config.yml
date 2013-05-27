@@ -28,6 +28,7 @@ twig:
 services:
   error_service:
     class: Hfietz\ErrorBundle\Service\ErrorService
+    arguments: ['@kernel']
     tags:
       - { name: kernel.event_listener, event: kernel.exception, method: onKernelException }
 
@@ -43,7 +44,6 @@ services:
       - [ setTemplateEngine, ["@templating"]]
       - [ setRouter, ["@router"]]
       - [ setFormFactory, ["@form.factory"]]
-      - [ setDatabaseService, ["@db_service"]]
 
 doctrine:
   dbal:
