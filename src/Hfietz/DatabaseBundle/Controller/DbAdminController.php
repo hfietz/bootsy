@@ -60,6 +60,11 @@ class DbAdminController implements DatabaseServiceAware
     }
   }
 
+  public function runUpdatesAction(Request $req)
+  {
+    return $this->versionsAction();
+  }
+
   public function statusAction()
   {
     $variables = $this->getStatusView();

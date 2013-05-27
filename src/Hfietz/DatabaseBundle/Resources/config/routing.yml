@@ -2,6 +2,10 @@ db_versions:
   path: /versions
   defaults: { _controller: db_admin_frontend:versionsAction }
 
+db_run_updates:
+  path: /versions/run
+  defaults: { _controller: db_admin_frontend:runUpdatesAction }
+
 db_status:
   path: /status
   defaults: { _controller: db_admin_frontend:statusAction }
