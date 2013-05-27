@@ -23,7 +23,11 @@ class LoggedException extends Exception
 
   public function __construct($message = "", $code = 0, Exception $previous = null)
   {
-    parent::__construct($message, $code, $previous);
+    parent::__construct($message, 0, $previous);
+
+    // Because some Exception subclasses have string codes (e. g. SQL error codes),
+    // and we can't pass those to the Exception constructor. Sheesh.
+    $this->code = $code;
 
     $this->timestamp = microtime(TRUE);
   }
