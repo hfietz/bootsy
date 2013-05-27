@@ -54,12 +54,12 @@ class Script extends SplFileInfo
 
   public function isOutdated()
   {
-    return !$this->isAtLatestVersion() && $this->getLatestRun()->timestamp > $this->getCTime();
+    return !$this->isAtLatestVersion() && $this->getLatestRun()->getDateTime()->getTimestamp() > $this->getCTime();
   }
 
   public function isUpdated()
   {
-    return !$this->isAtLatestVersion() && $this->getLatestRun()->timestamp < $this->getCTime();
+    return !$this->isAtLatestVersion() && $this->getLatestRun()->getDateTime()->getTimestamp() < $this->getCTime();
   }
 
   /**
@@ -88,9 +88,9 @@ class Script extends SplFileInfo
          * @var ScriptRun $runA
          * @var ScriptRun $runB
          */
-        if ($runA->timestamp < $runB->timestamp) {
+        if ($runA->getDateTime()->getTimestamp() < $runB->getDateTime()->getTimestamp()) {
           return -1;
-        } else if ($runA->timestamp > $runB->timestamp) {
+        } else if ($runA->getDateTime()->getTimestamp() > $runB->getDateTime()->getTimestamp()) {
           return 1;
         } else {
           return 0;
