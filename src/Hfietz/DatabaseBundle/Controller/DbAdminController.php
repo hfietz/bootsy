@@ -49,6 +49,7 @@ class DbAdminController implements DatabaseServiceAware
 
       $versions = array();
       foreach ($this->databaseService->loadScripts() as $script) {
+        $script->load();
         $versions[] = new ScriptView($script);
       }
 
