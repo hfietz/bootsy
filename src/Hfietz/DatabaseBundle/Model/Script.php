@@ -2,6 +2,7 @@
 
 namespace Hfietz\DatabaseBundle\Model;
 
+use DateTime;
 use Exception;
 use Symfony\Component\Finder\SplFileInfo;
 
@@ -16,6 +17,11 @@ class Script extends SplFileInfo
    * @var ScriptRun[]
    */
   protected $runs = array();
+
+  /**
+   * @var bool
+   */
+  protected $areRunsSorted = FALSE;
 
   /**
    * Replaces a copy constructor which would end up smelly because the parent class already has different constructor params
@@ -36,12 +42,35 @@ class Script extends SplFileInfo
     $this->hash = $this->calculateHash($this->getContents());
   }
 
+  public function isNew()
+  {
+    return NULL === $this->getLatestRun();
+  }
+
+  public function isAtLatestVersion()
+  {
+    return !$this->isNew() && $this->getLatestRun()->hash === $this->getHash();
+  }
+
+  public function isOutdated()
+  {
+    return !$this->isAtLatestVersion() && $this->getLatestRun()->timestamp > $this->getCTime();
+  }
+
+  public function isUpdated()
+  {
+    return !$this->isAtLatestVersion() && $this->getLatestRun()->timestamp < $this->getCTime();
+  }
+
   /**
    * @param ScriptRun $run
    */
   public function addRun($run)
   {
     $this->runs[] = $run;
+    // TODO: It would be an optimization if, instead of just setting a dirty flag and resorting later, we would insert
+    //       the new run in the right place of an already sorted set.
+    $this->areRunsSorted = FALSE;
   }
 
   /**
@@ -53,21 +82,30 @@ class Script extends SplFileInfo
       return NULL;
     }
 
-    usort($this->runs, function ($runA, $runB) {
-      /**
-       * @var ScriptRun $runA
-       * @var ScriptRun $runB
-       */
-      if ($runA->timestamp < $runB->timestamp) {
-        return -1;
-      } else if ($runA->timestamp > $runB->timestamp) {
-        return 1;
-      } else {
-        return 0;
-      }
-    });
+    if (FALSE === $this->areRunsSorted) {
+      usort($this->runs, function ($runA, $runB) {
+        /**
+         * @var ScriptRun $runA
+         * @var ScriptRun $runB
+         */
+        if ($runA->timestamp < $runB->timestamp) {
+          return -1;
+        } else if ($runA->timestamp > $runB->timestamp) {
+          return 1;
+        } else {
+          return 0;
+        }
+      });
+
+      $this->areRunsSorted = TRUE;
+    }
 
     return end($this->runs);
+  }
+
+  public function getDateTime()
+  {
+    return new DateTime('@' . $this->getCTime());
   }
 
   /**
@@ -75,6 +113,10 @@ class Script extends SplFileInfo
    */
   public function getHash()
   {
+    if (NULL === $this->hash && TRUE === $this->isFile()) {
+      $this->hash = $this->calculateHash($this->getContents());
+    }
+
     return $this->hash;
   }
 

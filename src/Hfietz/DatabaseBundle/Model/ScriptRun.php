@@ -2,6 +2,8 @@
 
 namespace Hfietz\DatabaseBundle\Model;
 
+use DateTime;
+
 class ScriptRun
 {
   public $filePath;
@@ -9,4 +11,13 @@ class ScriptRun
   public $hash;
 
   public $timestamp;
+
+  public function getDateTime()
+  {
+    if (is_string($this->timestamp)) {
+      return new DateTime($this->timestamp);
+    } else {
+      return NULL;
+    }
+  }
 }

@@ -22,20 +22,20 @@ class ScriptView
   {
     $this->file = $script->getRelativePathname();
     $this->currentVersion = $script->getHash();
-    $this->lastChanged = new DateTime('@' . $script->getCTime());
-    $lastRun = $script->getLatestRun();
-    if (NULL === $lastRun) {
+    $this->lastChanged = $script->getDateTime();
+    if ($script->isNew()) {
       $this->status = 'new';
     } else {
-      $this->lastTimeRun = new DateTime('@' . $lastRun->timestamp);
+      $lastRun = $script->getLatestRun();
+      $this->lastTimeRun = $lastRun->getDateTime();
       $this->lastVersionRun = $lastRun->hash;
-      if ($this->lastVersionRun === $this->currentVersion) {
+      if ($script->isAtLatestVersion()) {
         $this->status = 'current';
       } else {
-        if ($lastRun->timestamp < $script->getCTime()) {
-          $this->status = 'changed';
-        } else {
+        if ($script->isOutdated()) {
           $this->status = 'outdated';
+        } else {
+          $this->status = 'changed';
         }
       }
     }
