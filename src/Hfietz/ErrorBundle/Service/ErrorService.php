@@ -2,12 +2,20 @@
 
 namespace Hfietz\ErrorBundle\Service;
 
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
+use Hfietz\DatabaseBundle\Service\DatabaseService;
+use Hfietz\DatabaseBundle\Service\DatabaseServiceAware;
 use Hfietz\ErrorBundle\Model\LoggedException;
 
-class ErrorService implements EventSubscriberInterface
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
+
+class ErrorService implements EventSubscriberInterface, DatabaseServiceAware
 {
+  /**
+   * @var DatabaseService
+   */
+  protected $databaseService;
+
   public static function getSubscribedEvents()
   {
     return array(
@@ -39,5 +47,13 @@ class ErrorService implements EventSubscriberInterface
   protected function triggerNotifications($error)
   {
     // TODO
+  }
+
+  /**
+   * @param \Hfietz\DatabaseBundle\Service\DatabaseService $databaseService
+   */
+  function setDatabaseService(DatabaseService $databaseService = NULL)
+  {
+    $this->databaseService = $databaseService;
   }
 }

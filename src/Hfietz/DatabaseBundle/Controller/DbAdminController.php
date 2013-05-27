@@ -8,6 +8,7 @@ use Hfietz\DatabaseBundle\Form\Type\ConfigForm;
 use Hfietz\DatabaseBundle\Model\ScriptView;
 
 use Hfietz\DatabaseBundle\Service\DatabaseService;
+use Hfietz\DatabaseBundle\Service\DatabaseServiceAware;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\Form\FormFactoryInterface;
@@ -18,7 +19,7 @@ use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\Yaml\Yaml;
 
 // TODO: secure those methods / routes
-class DbAdminController
+class DbAdminController implements DatabaseServiceAware
 {
   /**
    * @var DatabaseService
@@ -154,7 +155,7 @@ class DbAdminController
   /**
    * @param \Hfietz\DatabaseBundle\Service\DatabaseService $databaseService
    */
-  public function setDatabaseService($databaseService)
+  public function setDatabaseService(DatabaseService $databaseService = NULL)
   {
     $this->databaseService = $databaseService;
   }
