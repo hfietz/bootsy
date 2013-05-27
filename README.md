@@ -5,32 +5,31 @@ This is chiefly a learning project for Symfony 2, my Hello World application, if
 webapp with generic functionality that is reusable for most actual applications. That is, if successful, this will be code
 I can continue to use.
 
+Specs are [here](https://github.com/hfietz/bootsy/wiki/Specs)
+
 The project will be constructed from the ground up rather than starting with a ready-made Symfony distribution, in order
 to get a precise understanding for the dependency management with Composer and the non-core bundles used in the Standard
-Edition. To that end, it begins with a Composer project that installs the Symfony framework, but none of the standard 3rd
-party bundles, such as Doctrine and SwiftMailer. Then a working skeleton with a kernel and a front controller is constructed,
-to get the code called by the webserver. Then, bundles present in the Standard Edition and new, custom bundles are added
-by and by, to eventually provide the following functionality:
+Edition.
 
-* a database-backed user management with login, signup via email and password reset
-* a typical HTML base layout that works both for mobile and desktop browsing and contains
-    - one navigation bar
-    - a "session info box", i. e. a place where the login status is displayed and links to log in / log out / account settings reside
-    - a "CI box", where a logo, or a slogan, or a headline can be displayed
-    - a main content area
+So far, it is using:
 
-* a set of CSS stylesheets, one each to
-    - reset all browser defaults
-    - position and size the above areas
-    - set colors, fonts, borders and backgrounds
-* an error handling system that
-    - logs messages to the database, along with the relevant application context
-    - displays user-oriented error pages, which hide technical info in favour of a friendly message and helpful suggestions
-    - provides the user with an error identifier to pass on to technical personnel who can use it to retrieve the specific technical info
-    - provides a "wall of shame" for administrators to view the error log and technical info via the browser
-    - forwards the content of the "wall of shame" to the admin / developers by email (optionally: RSS)
-    - optionally provide a mechanism to forward errors to a bugtracker automatically, sample targets are JIRA and FogBugz
+* Symfony 2.2.1
+* Doctrine 2.2 (only the DBAL is used so far)
 
-The assumption is that the above specs lead to a mix of new code and use of existing libraries which is best for getting
-to know the whole ecosystem, while writing enough own code, but not too much. Also, those functionality should be widely
-reusable in future projects.
+It will probably also use:
+
+* Swift Mailer
+* Friends Of Symfony User Bundle
+
+I am still very hesitant to use the Doctrine ORM, not because there's anything wrong with it, rather because I tend to
+not get a lot out of ORMs in general. This is mostly due to a habit of creating a rather rich model layer that often
+turns out to map badly to a normalized database. I usually favor factory methods on the domain models that take primitive
+data objects gathered directly from the db result set by a very simple controller whose responsibility is mostly in
+piecing together the right SQL statements. The two things that make me consider using an ORM are object identity and
+merging of user input and existing records. On the other hand, those two tasks are also where I have had the most trouble
+with ORMs.
+
+Current todos:
+* store errors in the database
+* create a "wall of shame" at /admin/errors
+* create a main layout and a route to /
