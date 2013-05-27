@@ -38,7 +38,7 @@ class DatabaseService
   /**
    * @var string[]
    */
-  protected $scriptPaths = array();
+  protected $schemaProviders = array();
 
   /**
    * @var Connection
@@ -49,6 +49,14 @@ class DatabaseService
    * @var KernelInterface
    */
   protected $kernel;
+
+  /**
+   * @param string $serviceId
+   */
+  public function registerSchemaProviderService($serviceId)
+  {
+    $this->schemaProviders[] = $serviceId;
+  }
 
   /**
    * @return DatabaseConfiguration|null
@@ -129,21 +137,23 @@ class DatabaseService
 
   public function getScriptPaths()
   {
-    return $this->scriptPaths;
-  }
+    /**
+     * @var DatabaseUpdateProvider $provider
+     */
+    $container = $this->kernel->getContainer();
+    $paths = array();
 
-  public function addScriptPath($path)
-  {
-    if (is_dir($this->getInstallationDir() . DIRECTORY_SEPARATOR . $path)) {
-      $this->scriptPaths[] = $path;
-    } else {
-      throw new Exception("Could not find directory '" . $path . "'");
+    foreach ($this->schemaProviders as $serviceId) {
+      $provider = $container->get($serviceId);
+      $paths[] = $provider->getDbScriptPath();
     }
+
+    return $paths;
   }
 
   protected function getInstallationDir()
   {
-    return realpath($this->kernel->getRootDir() . DIRECTORY_SEPARATOR . '..');
+    return realpath($this->kernel->getRootDir() . '/..');
   }
 
   /**
