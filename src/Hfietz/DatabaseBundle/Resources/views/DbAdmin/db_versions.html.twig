@@ -10,13 +10,13 @@
             <tbody>
             {%  for version in versions %}
                 {% spaceless %}
-                <tr class="{{ versions.status }}">
-                    <td>{{ versions.file }}</td>
-                    <td>{{ versions.currentVersion }}</td>
-                    <td>{{ versions.lastChanged|date('Y-m-d H:i:s') }}</td>
-                    <td>{{ versions.lastVersionRun }}</td>
-                    <td>{{ versions.lastTimeRun|date('Y-m-d H:i:s') }}</td>
-                    <td>{{ versions.status }}</td>
+                <tr class="{{ version.status }}">
+                    <td>{{ version.file }}</td>
+                    <td>{{ version.currentVersion }}</td>
+                    <td>{{ version.lastChanged|date('Y-m-d H:i:s') }}</td>
+                    <td>{{ version.lastVersionRun }}</td>
+                    <td>{{ version.lastTimeRun|date('Y-m-d H:i:s') }}</td>
+                    <td>{{ version.status }}</td>
                 </tr>
                 {% endspaceless %}
             {%  endfor %}
