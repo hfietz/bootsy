@@ -49,7 +49,6 @@ class DbAdminController implements DatabaseServiceAware
 
       $versions = array();
       foreach ($this->databaseService->loadScripts() as $script) {
-        $script->load();
         $versions[] = new ScriptView($script);
       }
 
@@ -62,7 +61,19 @@ class DbAdminController implements DatabaseServiceAware
 
   public function runUpdatesAction(Request $req)
   {
-    return $this->versionsAction();
+    if (FALSE === $this->databaseService->verifyConnection()) {
+      return $this->statusAction(); // TODO: Investigate: How will forwarding be handled in 2.3? Are there any issues forwarding like this?
+    } else {
+
+      $versions = array();
+      foreach ($this->databaseService->loadScripts() as $script) {
+        if ($script->isNew() || $script->isUpdated()) {
+          $this->databaseService->runScript($script);
+        }
+      }
+
+      return new RedirectResponse($this->router->generate('db_versions'));
+    }
   }
 
   public function statusAction()

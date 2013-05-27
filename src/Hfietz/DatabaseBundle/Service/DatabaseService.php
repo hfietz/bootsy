@@ -16,6 +16,7 @@ use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Types\Type;
 
+use PDO;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
@@ -91,11 +92,14 @@ class DatabaseService
   }
 
   /**
-   * @param AbstractSchemaManager $schemaManager
    * @return Table
    */
-  protected function getVersionsTable($schemaManager)
+  protected function getVersionsTable()
   {
+    /**
+     * @var AbstractSchemaManager $schemaManager
+     */
+    $schemaManager = $this->db_connection->getSchemaManager();
     $versionsTable = 'meta.updateScripts';
 
     if (FALSE === $schemaManager->tablesExist(array($versionsTable))) {
@@ -187,7 +191,8 @@ class DatabaseService
       }
 
       foreach ($finder->files()->in($path) as $file) {
-        $scripts[$file->getPathname()] = Script::fromFileInfo($file);
+        $relPath = $this->makePathRelativeToInstallDir($file->getPathname());
+        $scripts[$relPath] = Script::fromFileInfo($file);
       }
     }
 
@@ -199,8 +204,7 @@ class DatabaseService
    */
   public function loadScriptRuns()
   {
-    $sm = $this->db_connection->getSchemaManager();
-    $table = $this->getVersionsTable($sm);
+    $table = $this->getVersionsTable();
 
     $qb = $this->db_connection->createQueryBuilder();
     $stmt = $qb->select('file_path', 'hash', 'timestamp')->from($table->getName(), 'v')->execute();
@@ -291,12 +295,7 @@ class DatabaseService
    */
   public function getConfigFileRelativePath()
   {
-    $fs = new Filesystem();
-
-    $fullPath = $this->getConfigFilePath();
-    $dir = dirname($fullPath);
-    $file = basename($fullPath);
-    return $fs->makePathRelative($dir, $this->getInstallationRootDir()) . $file;
+    return $this->makePathRelativeToInstallDir($this->getConfigFilePath());
   }
 
   /**
@@ -305,5 +304,55 @@ class DatabaseService
   public function getInstallationRootDir()
   {
     return realpath($this->kernel->getRootDir() . DIRECTORY_SEPARATOR . '..');
+  }
+
+  /**
+   * @param Script $script
+   */
+  public function runScript(Script $script)
+  {
+    /**
+     * @var PDO $driver
+     */
+    try {
+      $driver = $this->db_connection->getWrappedConnection();
+      if (is_a($driver, 'PDO')) {
+        // Unfortunately, there is (seems to be) no way to query the current value of the attribute, so we can't set it
+        // back when we're done.
+        $driver->setAttribute(PDO::ATTR_EMULATE_PREPARES, TRUE);
+      }
+      $stmt = $this->db_connection->prepare($script->getContents());
+      $stmt->execute();
+      $this->logScriptRun($script);
+    } catch (Exception $e) {
+      throw $e; // TODO: Log script run with errors?
+    }
+  }
+
+  /**
+   * @param Script $script
+   */
+  protected function logScriptRun(Script $script)
+  {
+    $table = $this->getVersionsTable();
+    $sql = 'INSERT INTO ' . $table->getName() . '(file_path, hash, timestamp) VALUES (?, ?, ?)';
+    $stmt = $this->db_connection->prepare($sql);
+    $stmt->bindValue(1, $this->makePathRelativeToInstallDir($script->getPathname()), PDO::PARAM_STR);
+    $stmt->bindValue(2, $script->getHash(), PDO::PARAM_STR);
+    $stmt->bindValue(3, $script->getDateTime()->format('c'), PDO::PARAM_STR);
+    $stmt->execute();
+  }
+
+  /**
+   * @param $fullPath
+   * @return string
+   */
+  protected function makePathRelativeToInstallDir($fullPath)
+  {
+    $fs = new Filesystem();
+    $dir = dirname($fullPath);
+    $file = basename($fullPath);
+    $relPath = $fs->makePathRelative($dir, $this->getInstallationRootDir()) . $file;
+    return $relPath;
   }
 }
