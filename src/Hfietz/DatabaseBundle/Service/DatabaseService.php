@@ -531,4 +531,23 @@ class DatabaseService
   {
     return $this->isSqlError($e, '23505');
   }
+
+  public function load(ObjectMapper $mapper, $keyColumn = 'id')
+  {
+    /**
+     * @var Statement $stmt
+     */
+    $qb = $this->db_connection->createQueryBuilder();
+    $mapper->buildSelectQuery($qb);
+    $stmt = $qb->execute();
+
+    $result = array();
+    if ($stmt->rowCount() > 0) {
+      foreach ($stmt->fetchAll() as $row) {
+        $mapper->hydrate($row, $result, $keyColumn);
+      }
+    }
+
+    return $result;
+  }
 }
