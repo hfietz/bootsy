@@ -6,9 +6,9 @@ use Exception;
 use Hfietz\DatabaseBundle\Form\Model\ConfigFormData;
 use Hfietz\DatabaseBundle\Form\Type\ConfigForm;
 use Hfietz\DatabaseBundle\Model\ScriptView;
-
 use Hfietz\DatabaseBundle\Service\DatabaseService;
 use Hfietz\DatabaseBundle\Service\DatabaseServiceAware;
+
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\Form\FormFactoryInterface;
@@ -150,7 +150,7 @@ class DbAdminController implements DatabaseServiceAware
   }
 
   /**
-   * @param mixed $template_engine
+   * @param EngineInterface $template_engine
    */
   public function setTemplateEngine($template_engine)
   {
@@ -178,7 +178,7 @@ class DbAdminController implements DatabaseServiceAware
   }
 
   /**
-   * @param mixed $router
+   * @param Router $router
    */
   public function setRouter($router)
   {
