@@ -3,6 +3,7 @@
 namespace Hfietz\ErrorBundle\Model;
 
 use DateTime;
+use DateTimeZone;
 use Exception;
 
 class LoggedException extends Exception
@@ -25,12 +26,34 @@ class LoggedException extends Exception
     // and we can't pass those to the Exception constructor. Sheesh.
     $this->code = $code;
 
-    $this->timestamp = microtime(TRUE);
+    $this->occurredAt(microtime(TRUE));
   }
 
   public static function fromException(Exception $e)
   {
     return new LoggedException($e->getMessage(), $e->getCode(), $e);
+  }
+
+  public static function fromData($data)
+  {
+    $ex = new LoggedException($data['message']);
+    $ex->file = $data['file'];
+    $ex->line = $data['line'];
+    $ex->timestamp = self::floatSecFromIso($data['occurred_at']);
+    $ex->occurrences = array($ex->timestamp);
+
+    return $ex;
+  }
+
+  /**
+   * @param $isoString
+   * @return float
+   */
+  public static function floatSecFromIso($isoString)
+  {
+    $dt = new DateTime($isoString, new DateTimeZone('UTC'));
+    $ts = floatval($dt->format('U.u'));
+    return $ts;
   }
 
   /**
@@ -41,7 +64,7 @@ class LoggedException extends Exception
   {
     $frac = (string)$usec;
     $frac = substr($frac, strpos($frac, '.'));
-    return strftime('%FT%T', self::secFromFloatSec($usec)) . $frac . 'Z';
+    return gmstrftime('%FT%T', self::secFromFloatSec($usec)) . $frac . 'Z';
   }
 
   /**
@@ -114,5 +137,43 @@ class LoggedException extends Exception
   public function getIsoTimestamp()
   {
     return self::isoFromFloatSec($this->timestamp);
+  }
+
+  /**
+   * @param float $microtime
+   */
+  public function occurredAt($microtime)
+  {
+    $microtime = floatval($microtime); // just to be sure
+    $position = $this->searchOccurrence($microtime);
+    array_splice($this->occurrences, $position, 0, array($microtime));
+    $this->timestamp = count($this->occurrences) > 0 ? end($this->occurrences) : NULL;
+  }
+
+  /**
+   * @param float $microtime
+   */
+  protected function searchOccurrence($microtime, $start = NULL, $end = NULL)
+  {
+    if (NULL === $start) {
+      $start = 0;
+      $end = count($this->occurrences) - 1;
+    }
+
+    if ($end < $start) {
+      return $start;
+    }
+
+    $position = $start + (int) floor(($end - $start) / 2);
+
+    if ($start == $end || !array_key_exists($position, $this->occurrences)) {
+      return $position;
+    } else {
+      if ($this->occurrences[$position] > $microtime) {
+        return $this->searchOccurrence($microtime, $start, $position - 1);
+      } else {
+        return $this->searchOccurrence($microtime, $position + 1, $end);
+      }
+    }
   }
 }

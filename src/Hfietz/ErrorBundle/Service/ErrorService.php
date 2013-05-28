@@ -118,4 +118,13 @@ class ErrorService implements EventSubscriberInterface, DatabaseServiceAware, Da
   {
     // TODO
   }
+
+  /**
+   * @return LoggedException[]
+   */
+  public function loadErrors()
+  {
+    $loader = new LoggedExceptionMapper();
+    return $this->databaseService->load($loader);
+  }
 }
