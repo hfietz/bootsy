@@ -20,7 +20,10 @@ class ErrorFrontendController
 
   public function listAction()
   {
-    return new Response('<h1>Wall Of Shame</h1>');
+    $view = array(
+      'pageTitle' => 'Error Log',
+    );
+    return $this->templateEngine->renderResponse('HfietzErrorBundle:ErrorFrontend:wall_of_shame.html.twig', $view);
   }
 
   /**
