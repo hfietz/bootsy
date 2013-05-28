@@ -39,7 +39,9 @@ class LoggedException extends Exception
    */
   public static function isoFromFloatSec($usec)
   {
-    return strftime('%FT%T', self::secFromFloatSec($usec)) . sprintf('.%d', (int)(fmod($usec, 10 ^ 6) * 10 ^ 6)) . 'Z';
+    $frac = (string)$usec;
+    $frac = substr($frac, strpos($frac, '.'));
+    return strftime('%FT%T', self::secFromFloatSec($usec)) . $frac . 'Z';
   }
 
   /**
