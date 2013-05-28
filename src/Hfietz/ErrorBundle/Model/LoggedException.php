@@ -2,6 +2,7 @@
 
 namespace Hfietz\ErrorBundle\Model;
 
+use DateTime;
 use Exception;
 
 class LoggedException extends Exception
@@ -9,17 +10,12 @@ class LoggedException extends Exception
   /**
    * @var int|null
    */
-  protected $numberOfOccurrences = NULL;
+  protected $occurrences = array();
 
   /**
    * @var float|null
    */
   protected $timestamp = NULL;
-
-  /**
-   * @var int|null
-   */
-  protected $id = NULL;
 
   public function __construct($message = "", $code = 0, Exception $previous = null)
   {
@@ -38,47 +34,44 @@ class LoggedException extends Exception
   }
 
   /**
+   * @param $usec
+   * @return string
+   */
+  public static function isoFromFloatSec($usec)
+  {
+    return strftime('%FT%T', self::secFromFloatSec($usec)) . sprintf('.%d', (int)(fmod($usec, 10 ^ 6) * 10 ^ 6)) . 'Z';
+  }
+
+  /**
+   * @param $usec
    * @return int
    */
-  public function getId()
+  public static function secFromFloatSec($usec)
   {
-    return $this->id;
+    return (int)$usec;
   }
 
   /**
-   * @param int $id
-   * @param bool $forceOverride
-   * @return $this
-   */
-  public function setId($id, $forceOverride = FALSE)
-  {
-    if (NULL === $this->id || $forceOverride === TRUE) {
-      $this->id = $id;
-    }
-
-    return $this;
-  }
-
-  /**
-   * @return int|null
+   * @return int
    */
   public function getNumberOfOccurrences()
   {
-    return $this->numberOfOccurrences;
+    return count($this->occurrences);
   }
 
-  /**
-   * @param int|null $occurrences
-   * @param bool $forceOverride
-   * @return $this
-   */
-  public function setNumberOfOccurrences($occurrences, $forceOverride = FALSE)
+  public function getErrorClass()
   {
-    if (NULL === $this->numberOfOccurrences || TRUE === $forceOverride) {
-      $this->numberOfOccurrences = $occurrences;
-    }
+    return NULL === $this->getPrevious() ? get_class($this) : get_class($this->getPrevious());
+  }
 
-    return $this;
+  public function getOriginalFile()
+  {
+    return NULL === $this->getPrevious() ? $this->getFile() : $this->getPrevious()->getFile();
+  }
+
+  public function getOriginalLine()
+  {
+    return NULL === $this->getPrevious() ? $this->getLine() : $this->getPrevious()->getLine();
   }
 
   /**
@@ -90,24 +83,34 @@ class LoggedException extends Exception
   }
 
   /**
-   * @param float $timestamp
-   * @param bool $forceOverride
-   * @return $this
+   * @return float|null
    */
-  public function setMilliseconds($timestamp, $forceOverride = FALSE)
+  public function getMicrotime()
   {
-    if (NULL === $this->timestamp || TRUE === $forceOverride) {
-      $this->timestamp = $timestamp / 1000.0;
-    }
-
-    return $this;
+    return $this->timestamp;
   }
 
   /**
-   * @return float|null
+   * @return int
    */
-  public function getTimestamp()
+  public function getUnixtime()
   {
-    return $this->timestamp;
+    return self::secFromFloatSec($this->timestamp);
+  }
+
+  /**
+   * @return DateTime
+   */
+  public function getDateTime()
+  {
+    return new DateTime($this->getIsoTimestamp());
+  }
+
+  /**
+   * @return string
+   */
+  public function getIsoTimestamp()
+  {
+    return self::isoFromFloatSec($this->timestamp);
   }
 }
