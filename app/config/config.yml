@@ -43,6 +43,7 @@ services:
     calls:
       - [ setTemplateEngine, ["@templating"]]
       - [ setRouter, ["@router"]]
+      - [ setErrorService, ["@error_service"]]
 
   db_admin_frontend:
     class: Hfietz\DatabaseBundle\Controller\DbAdminController
