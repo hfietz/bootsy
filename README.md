@@ -30,6 +30,5 @@ merging of user input and existing records. On the other hand, those two tasks a
 with ORMs.
 
 Current todos:
-* store errors in the database
 * create a "wall of shame" at /admin/errors
 * create a main layout and a route to /
