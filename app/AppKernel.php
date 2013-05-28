@@ -21,6 +21,7 @@ class AppKernel extends Kernel
       new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
       new Hfietz\AccessBundle\HfietzAccessBundle(),
       new Hfietz\DatabaseBundle\HfietzDatabaseBundle(),
+      new Hfietz\ErrorBundle\HfietzErrorBundle(),
     );
 
     if (in_array($this->getEnvironment(), array('dev', 'test'))) {

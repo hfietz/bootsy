@@ -5,3 +5,7 @@ login:
 db_admin:
   resource: "@HfietzDatabaseBundle/Resources/config/routing.yml"
   prefix: /admin/db
+
+errors:
+  resource: "@HfietzErrorBundle/Resources/config/routing.yml"
+  prefix: /admin/errors

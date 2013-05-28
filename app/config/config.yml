@@ -38,6 +38,12 @@ services:
       - [ setDbConnection, ["@database_connection"]]
       - [ setKernel, ["@kernel"]]
 
+  error_frontend:
+    class: Hfietz\ErrorBundle\Controller\ErrorFrontendController
+    calls:
+      - [ setTemplateEngine, ["@templating"]]
+      - [ setRouter, ["@router"]]
+
   db_admin_frontend:
     class: Hfietz\DatabaseBundle\Controller\DbAdminController
     calls:
