@@ -127,8 +127,7 @@ class DatabaseService
     try {
       $schemaManager->createTable($table);
     } catch (DBALException $e) {
-      $cause = $e->getPrevious();
-      if (is_a($cause, 'PDOException') && $cause->getCode() === '3F000') {
+      if ($this->isSchemaNotExists($e)) {
         $sql = 'CREATE SCHEMA ' . $table->getNamespaceName();
         $this->db_connection->exec($sql);
         $schemaManager->createTable($table);
@@ -354,5 +353,182 @@ class DatabaseService
     $file = basename($fullPath);
     $relPath = $fs->makePathRelative($dir, $this->getInstallationRootDir()) . $file;
     return $relPath;
+  }
+
+  public function selectOrInsert($tableName, $data, $keyFields = NULL, $idField = 'id')
+  {
+    $searchFields = $this->extractSearchFields($data, $keyFields);
+
+    $svc = $this;
+    $id = $this->inTransaction(function () use ($svc, $tableName, $data, $idField, $searchFields) {
+      $id = $svc->unsafeSelectId($tableName, $searchFields, $idField);
+      if (NULL === $id) {
+        $success = $svc->unsafeInsert($tableName, $data);
+        if (TRUE === $success) {
+          $id = $svc->unsafeSelectId($tableName, $searchFields, $idField);
+          return $id;
+        } else {
+          throw new DatabaseException('Insert failed for unknown reasons');
+        }
+      }
+      return $id;
+    });
+
+    return $id;
+  }
+
+  public function insertOrSelect($tableName, $data, $keyFields = NULL, $idField = 'id')
+  {
+    $searchFields = $this->extractSearchFields($data, $keyFields);
+
+    try {
+      $success = $this->unsafeInsert($tableName, $data);
+      if (FALSE === $success) {
+        throw new DatabaseException('Insert failed for unknown reasons');
+      }
+    } catch (Exception $e) {
+      if (!$this->isDuplicateKeyViolation($e)) {
+        throw $e;
+      }
+    }
+    $id = $this->unsafeSelectId($tableName, $searchFields, $idField);
+
+    return $id;
+  }
+
+  /**
+   * @param $tableName
+   * @param $data
+   * @return bool
+   */
+  public function unsafeInsert($tableName, $data)
+  {
+    $sql = 'INSERT INTO ' . $tableName . ' (' . join(', ', array_keys($data)) . ') VALUES(' . join(', ', array_fill(0, count($data), '?')) . ')';
+    $stmt = $this->db_connection->prepare($sql);
+    $ix = 1;
+    foreach ($data as $value) {
+      $stmt->bindValue($ix, $value);
+      $ix += 1;
+    }
+
+    $success = $stmt->execute();
+    return $success;
+  }
+
+  /**
+   * @param $tableName
+   * @param $fields
+   * @param $searchFields
+   * @return mixed
+   */
+  public function unsafeSelect($tableName, $fields = NULL, $searchFields = array())
+  {
+    $select = $this->db_connection->createQueryBuilder()->select($fields);
+    $select->from($tableName, 't');
+    foreach ($searchFields as $name => $value) {
+      $select->andWhere($name . ' = ?');
+      $select->createPositionalParameter($value);
+    }
+
+    $sql = $select->getSQL();
+    $result = $select->execute();
+    return $result;
+  }
+
+  /**
+   * @param $tableName
+   * @param $searchFields
+   * @param $idField
+   * @return int|null
+   */
+  public function unsafeSelectId($tableName, $searchFields = array(), $idField = 'id')
+  {
+    $result = $this->unsafeSelect($tableName, $idField, $searchFields);
+
+    switch ($result->rowCount()) {
+      case 0:
+        $id = NULL;
+        break;
+      case 1:
+        $id = (int)$result->fetchColumn();
+        break;
+      default:
+        throw new DatabaseException('Ambigous search criteria delivered more than one result where exactly one was expected.');
+    }
+
+    return $id;
+  }
+
+  /**
+   * @param $data
+   * @param $keyFields
+   * @return array
+   */
+  protected function extractSearchFields($data, $keyFields)
+  {
+    $searchFields = array();
+    if (is_array($keyFields)) {
+      foreach ($keyFields as $name) {
+        if (array_key_exists($name, $data)) {
+          $searchFields[$name] = $data[$name];
+        }
+      }
+      return $searchFields;
+    } else {
+      $searchFields = $data;
+      return $searchFields;
+    }
+  }
+
+  /**
+   * @param $fn
+   * @return mixed
+   * @throws \Exception
+   */
+  public function inTransaction($fn)
+  {
+    $this->db_connection->beginTransaction();
+    try {
+      $value = call_user_func($fn);
+      $this->db_connection->commit();
+    } catch (Exception $e) {
+      $this->db_connection->rollBack();
+      throw $e;
+    }
+    return $value;
+  }
+
+  /**
+   * @param Exception $e
+   * @param $sqlError
+   * @return bool
+   */
+  protected function isSqlError(Exception $e = NULL, $sqlError)
+  {
+    if (is_a($e, 'PDOException')) {
+      return $e->getCode() === $sqlError;
+    } else if (is_a($e, 'Doctrine\DBAL\DBALException')) {
+      return $this->isSqlError($e->getPrevious(), $sqlError);
+    } else {
+      return FALSE;
+    }
+  }
+
+  /**
+   * @param Exception $e
+   * @return bool
+   */
+  public function isSchemaNotExists(Exception $e = NULL)
+  {
+    return $this->isSqlError($e, '3F000');
+  }
+
+  /**
+   * @param Exception $e
+   * @return bool
+   */
+  public function isDuplicateKeyViolation(Exception $e = NULL)
+  {
+    return $this->isSqlError($e, '23505');
   }
 }
