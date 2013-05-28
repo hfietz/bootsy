@@ -2,10 +2,14 @@
 
 namespace Hfietz\ErrorBundle\Service;
 
+use Exception;
+
 use Hfietz\DatabaseBundle\Service\DatabaseService;
 use Hfietz\DatabaseBundle\Service\DatabaseServiceAware;
 use Hfietz\DatabaseBundle\Service\DatabaseUpdateProvider;
+use Hfietz\ErrorBundle\Model\ErrorHandlerException;
 use Hfietz\ErrorBundle\Model\LoggedException;
+use Hfietz\ErrorBundle\Model\LoggedExceptionMapper;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Filesystem\Filesystem;
@@ -36,19 +40,40 @@ class ErrorService implements EventSubscriberInterface, DatabaseServiceAware, Da
     $this->kernel = $kernel;
   }
 
-  public function onKernelException(GetResponseForExceptionEvent $e)
+  public function onKernelException(GetResponseForExceptionEvent $event)
   {
-    $error = LoggedException::fromException($e->getException());
+    $error = LoggedException::fromException($event->getException());
 
-    $this->storeError($error);
-    if ($this->raisesAlarm($error)) {
-      $this->triggerNotifications($error);
+    try {
+      $this->storeError($error);
+      if ($this->raisesAlarm($error)) {
+        $this->triggerNotifications($error);
+      }
+    } catch (Exception $internal) {
+      $this->handleInternalException($event, $internal);
     }
   }
 
-  protected function storeError($error)
+  /**
+   * @param LoggedException $error
+   * @throws \Hfietz\ErrorBundle\Model\ErrorHandlerException
+   */
+  protected function storeError(LoggedException $error)
   {
-    // TODO
+    if (TRUE === $this->databaseService->verifyConnection($msg, $internalError)) {
+      try {
+        $id = $this->databaseService->selectOrInsert(LoggedExceptionMapper::getTableName(), LoggedExceptionMapper::arrayFromModel($error));
+        $idOccurrence = $this->databaseService->insertOrSelect(LoggedExceptionMapper::getOccurenceTableName(), LoggedExceptionMapper::arrayOccurrence($id, $error));
+      } catch (Exception $e) {
+        throw new ErrorHandlerException('Error while writing error to the database', 0, $e);
+      }
+    } else {
+      if (is_a($internalError, 'Exception')) {
+        throw new ErrorHandlerException($msg, 0, $internalError);
+      } else {
+        throw new ErrorHandlerException($msg);
+      }
+    }
   }
 
   protected function raisesAlarm($error)
@@ -82,5 +107,15 @@ class ErrorService implements EventSubscriberInterface, DatabaseServiceAware, Da
     $root = realpath($this->kernel->getRootDir() . '/..'); // KernelInterface::getRootDir always returns Unix-style paths
 
     return $fs->makePathRelative($path, $root);
+  }
+
+  /**
+   * Bail out in some graceful way when the error handler itself has errors.
+   * @param GetResponseForExceptionEvent $event
+   * @param Exception $error
+   */
+  protected function handleInternalException(GetResponseForExceptionEvent $event, Exception $error)
+  {
+    // TODO
   }
 }
