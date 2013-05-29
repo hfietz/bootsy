@@ -1,0 +1,4 @@
+Econemon\Bootsy\DatabaseBundle\Form\Model\ConfigFormData:
+    constraints:
+        - Callback:
+            methods: [ 'checkNewPasswordForTypos' ]

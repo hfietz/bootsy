@@ -1,11 +1,11 @@
 login:
   path: /login
-  defaults: { _controller: HfietzAccessBundle:Session:login }
+  defaults: { _controller: EconemonBootsyAccessBundle:Session:login }
 
 db_admin:
-  resource: "@HfietzDatabaseBundle/Resources/config/routing.yml"
+  resource: "@EconemonBootsyDatabaseBundle/Resources/config/routing.yml"
   prefix: /admin/db
 
 errors:
-  resource: "@HfietzErrorBundle/Resources/config/routing.yml"
+  resource: "@EconemonBootsyErrorBundle/Resources/config/routing.yml"
   prefix: /admin/errors

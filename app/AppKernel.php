@@ -19,9 +19,8 @@ class AppKernel extends Kernel
       new Symfony\Bundle\SecurityBundle\SecurityBundle(),
       new Symfony\Bundle\TwigBundle\TwigBundle(),
       new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
-      new Hfietz\AccessBundle\HfietzAccessBundle(),
-      new Hfietz\DatabaseBundle\HfietzDatabaseBundle(),
-      new Hfietz\ErrorBundle\HfietzErrorBundle(),
+      new Econemon\Bootsy\DatabaseBundle\EconemonBootsyDatabaseBundle(),
+      new Econemon\Bootsy\ErrorBundle\EconemonBootsyErrorBundle(),
     );
 
     if (in_array($this->getEnvironment(), array('dev', 'test'))) {

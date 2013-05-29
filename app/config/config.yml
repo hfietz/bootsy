@@ -27,26 +27,26 @@ twig:
 
 services:
   error_service:
-    class: Hfietz\ErrorBundle\Service\ErrorService
+    class: Econemon\Bootsy\ErrorBundle\Service\ErrorService
     arguments: ['@kernel']
     tags:
       - { name: kernel.event_listener, event: kernel.exception, method: onKernelException }
 
   db_service:
-    class: Hfietz\DatabaseBundle\Service\DatabaseService
+    class: Econemon\Bootsy\DatabaseBundle\Service\DatabaseService
     calls:
       - [ setDbConnection, ["@database_connection"]]
       - [ setKernel, ["@kernel"]]
 
   error_frontend:
-    class: Hfietz\ErrorBundle\Controller\ErrorFrontendController
+    class: Econemon\Bootsy\ErrorBundle\Controller\ErrorFrontendController
     calls:
       - [ setTemplateEngine, ["@templating"]]
       - [ setRouter, ["@router"]]
       - [ setErrorService, ["@error_service"]]
 
   db_admin_frontend:
-    class: Hfietz\DatabaseBundle\Controller\DbAdminController
+    class: Econemon\Bootsy\DatabaseBundle\Controller\DbAdminController
     calls:
       - [ setTemplateEngine, ["@templating"]]
       - [ setRouter, ["@router"]]
