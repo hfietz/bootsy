@@ -2,8 +2,10 @@
 <html>
 <head>
     <title>{{ pageTitle|default('Bootsy') }}</title>
+    {% block stylesheets %}{% endblock %}
 </head>
 <body>
 {% block body %}{% endblock %}
+{% block externalJs %}{% endblock %}
 </body>
 </html>
