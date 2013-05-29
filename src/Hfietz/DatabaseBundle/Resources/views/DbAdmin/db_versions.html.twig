@@ -1,0 +1,31 @@
+{% extends '::base.html.twig' %}
+
+{%  block content %}
+    <h2>Database versions:</h2>
+    {%  if versions is defined and versions %}
+        <form action="{{ path('db_run_updates') }}">
+            <table id="versions">
+                <thead>
+                    <tr><th>File</th><th>Version</th><th>Date</th><th>Installed Version</th><th>Installed Date</th><th>Status</th></tr>
+                </thead>
+                <tbody>
+                {%  for version in versions %}
+                    {% spaceless %}
+                    <tr class="{{ version.status }}">
+                        <td>{{ version.file }}</td>
+                        <td>{{ version.currentVersion }}</td>
+                        <td>{{ version.lastChanged|date('Y-m-d H:i:s') }}</td>
+                        <td>{{ version.lastVersionRun }}</td>
+                        <td>{{ version.lastTimeRun|date('Y-m-d H:i:s') }}</td>
+                        <td>{{ version.status }}</td>
+                    </tr>
+                    {% endspaceless %}
+                {%  endfor %}
+                </tbody>
+            </table>
+            <input type="submit" value="Run all new and changed updates" />
+        </form>
+    {%  else  %}
+        <p>No version info is available. There probably are no version scripts yet.</p>
+    {%  endif %}
+{% endblock %}

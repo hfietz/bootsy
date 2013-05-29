@@ -1,0 +1,35 @@
+{% extends '::base.html.twig' %}
+
+{%  block content %}
+    <h2>Database status: {{ dbStatus }}</h2>
+    <p class="{{ messageType }}">{{ message }}</p>
+    {%  if parameters is defined %}
+        <h3>Parameters used:</h3>
+        <dl>
+            {%  for name, value in parameters.view %}
+                <dt>{{ name }}</dt><dd>{{ value|default('n/a') }}</dd>
+            {% endfor %}
+        </dl>
+    {%  else  %}
+        <p>The parameters that were used could not be determined.</p>
+    {%  endif %}
+    {%  if configFile is defined %}
+        <h3>Configuration in file {{ configFile }}:</h3>
+        {% if form is defined %}
+        <form action="{{ path('db_configure') }}" method="post" {{  form_enctype(form) }}>
+            {{ form_widget(form) }}
+            <input type="submit" value="Save" />
+        </form>
+        {% elseif config is defined %}
+        <dl>
+            {%  for name, value in config.parameters.view %}
+                <dt>{{ name }}</dt><dd>{{ value|default('n/a') }}</dd>
+            {% endfor %}
+        </dl>
+        {% else %}
+            <p>No configuration info is available.</p>
+        {% endif %}
+    {%  else  %}
+        <p>No configuration file is known.</p>
+    {%  endif %}
+{% endblock %}
