@@ -1,5 +1,6 @@
 {
   "name": "hfietz/bootsy",
+  "version": "1.0.0-dev",
 
   "require": {
     "symfony/symfony": "2.2.1",
