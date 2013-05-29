@@ -9,6 +9,7 @@ I can continue to use.
 
 Specs are [here](https://github.com/hfietz/bootsy/wiki/Specs)
 
+### Status (as of 2013-05-29)
 The current code is very much WIP and even features that are complete might still be a little rough in many places.
 
 Currently functional URLs:
