@@ -1,0 +1,19 @@
+parameters:
+    # The two SQL scripts in the code base are currently postgres-specific
+    # and will be run by pretty naive code, so it's currently best to use postgres.
+    # You can set up a database and user and go to /admin/db/status to set up the db
+    # config below. This will rewrite this file, and erase comments and empty lines.
+    database_driver: pdo_pgsql
+    database_host: localhost
+    database_port: null
+    database_name: bootsy_db
+    database_user: bootsy_user
+    database_password: bootsy_pass
+    
+    mailer_transport: smtp # not yet used
+    mailer_host: 127.0.0.1 # not yet used
+    mailer_user: null # not yet used
+    mailer_password: null # not yet used
+    
+    locale: en
+    secret: ThisTokenIsNotSoSecretChangeIt
