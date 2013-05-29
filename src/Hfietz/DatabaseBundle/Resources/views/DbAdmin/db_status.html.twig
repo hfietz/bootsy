@@ -1,6 +1,6 @@
 {% extends '::base.html.twig' %}
 
-{%  block content %}
+{%  block body %}
     <h2>Database status: {{ dbStatus }}</h2>
     <p class="{{ messageType }}">{{ message }}</p>
     {%  if parameters is defined %}
