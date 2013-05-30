@@ -1,3 +1,16 @@
 error_list:
   path: /
   defaults: { _controller: error_frontend:listAction }
+
+test_404:
+  path: error_404
+  defaults: { _controller: error_frontend:testAction, code: "404" }
+
+test_500:
+  path: error_500
+  defaults: { _controller: error_frontend:testAction, code: "500" }
+
+test_error:
+  path: error_xxx
+  defaults: { _controller: error_frontend:testAction, code: "xxx" }
+

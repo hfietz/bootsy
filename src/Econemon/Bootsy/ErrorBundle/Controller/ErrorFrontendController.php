@@ -7,6 +7,8 @@ use Econemon\Bootsy\ErrorBundle\Service\ErrorService;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ErrorFrontendController
 {
@@ -37,6 +39,20 @@ class ErrorFrontendController
       'list' => $list,
     );
     return $this->templateEngine->renderResponse('EconemonBootsyErrorBundle:ErrorFrontend:wall_of_shame.html.twig', $view);
+  }
+
+  public function testAction($code = NULL) {
+    switch ($code) {
+      case "404":
+        throw new NotFoundHttpException('Testing 404 page');
+        break;
+      case "500":
+        throw new HttpException(500, 'Testing 500 page');
+        break;
+      default:
+        throw new HttpException(501, 'Testing unknown error page');
+        break;
+    }
   }
 
   /**
