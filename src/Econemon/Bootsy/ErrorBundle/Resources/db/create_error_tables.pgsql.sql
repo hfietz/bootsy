@@ -1,6 +1,6 @@
 BEGIN;
 
-DO $$
+CREATE FUNCTION create_error_tables() RETURNS void AS $$
   DECLARE
     sch TEXT := 'management';
     base_table TEXT := 'error';
@@ -33,5 +33,9 @@ DO $$
     END IF;
   END
 $$ LANGUAGE plpgsql;
+
+SELECT create_error_tables();
+
+DROP FUNCTION create_error_tables();
 
 COMMIT;
