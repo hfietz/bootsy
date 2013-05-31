@@ -1,0 +1,59 @@
+{% extends 'EconemonBootsyApplicationBundle:Main:html5-default.html.twig' %}
+{% block stylesheets %}
+    <link href="{{ asset('css/reset.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('css/layout.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('css/looknfeel.css') }}" rel="stylesheet" type="text/css" />
+{% endblock %}
+{% block body %}
+    {% block session %}
+        <div id="session-status">{% spaceless %}
+        {% if session is defined %}
+            {{ render(controller('EconemonBootsySecurityBundle:Session:status')) }}
+        {% else %}
+            <a href="{{ path('login') }}">Login</a>
+        {% endif %}
+        </div>{% endspaceless %}
+    {% endblock %}
+    {% block logo %}
+        <div id="logo">
+            {% if logo is defined %}
+                {% if logo.image is defined %}
+                    <img src="{{ asset(logo.image.src) }}" class="logo">
+                {% endif %}
+                {% if logo.headline is defined %}
+                    <h1>{{ logo.headline }}</h1>
+                {% endif %}
+            {% endif %}
+        </div>
+    {% endblock %}
+    <div id="frame">{% block frame %}
+            {% block navigation %}
+                {# TODO: Build a proper, recursive template structure for the menu #}
+                {% if menu is defined and menu %}
+                    <ul id="main-navi" class="menu">
+                        {% for item in menu %}{% spaceless %}
+                            <li>
+                                {% if item.target is defined %}<a href="{{ path(item.target) }}">{{ item.label }}</a> {% else %}{{ item.label }}{% endif %}
+                                {% if item.submenu is defined and item.submenu %}
+                                    <ul class="submenu">
+                                        {% for subitem in item.submenu %}
+                                            <li><a href="{{ path(subitem.target) }}">{{ subitem.label }}</a></li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
+                            </li>
+                        {% endspaceless %}{% endfor %}
+                    </ul>
+                {% endif %}
+            {% endblock %}
+            <div id="content">
+                {% block content %}
+                {% endblock %}
+            </div>
+        {% endblock %}</div>
+    <div id="footer">
+        {% block footer %}{% endblock %}
+    </div>
+{% endblock %}
+{% block javascripts %}
+{% endblock %}
