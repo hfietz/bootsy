@@ -191,7 +191,7 @@ class DatabaseService
 
       foreach ($finder->files()->in($path) as $file) {
         $relPath = $this->makePathRelativeToInstallDir($file->getPathname());
-        $scripts[$relPath] = Script::fromFileInfo($file);
+        $scripts[$relPath] = Script::fromFileInfo($file, $relPath);
       }
     }
 

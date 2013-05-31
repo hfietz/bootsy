@@ -11,6 +11,11 @@ class Script extends SplFileInfo
   /**
    * @var string
    */
+  protected $normalizedPath;
+
+  /**
+   * @var string
+   */
   protected $hash;
 
   /**
@@ -28,9 +33,11 @@ class Script extends SplFileInfo
    * @param SplFileInfo $fileInfo
    * @return Script
    */
-  public static function fromFileInfo(SplFileInfo $fileInfo)
+  public static function fromFileInfo(SplFileInfo $fileInfo, $normalizedPath)
   {
-    return new Script($fileInfo->getPathname(), $fileInfo->getRelativePath(), $fileInfo->getRelativePathname());
+    $script = new Script($fileInfo->getPathname(), $fileInfo->getRelativePath(), $fileInfo->getRelativePathname());
+    $script->normalizedPath = $normalizedPath;
+    return $script;
   }
 
   public function load()
@@ -128,5 +135,13 @@ class Script extends SplFileInfo
   {
     // We assume that we are using the hashes here in a security-insensitive manner, and thus prefer md5 for its efficiency.
     return md5($content);
+  }
+
+  /**
+   * @return string
+   */
+  public function getNormalizedPath()
+  {
+    return $this->normalizedPath;
   }
 }
