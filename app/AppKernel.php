@@ -21,6 +21,7 @@ class AppKernel extends Kernel
       new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
       new Econemon\Bootsy\DatabaseBundle\EconemonBootsyDatabaseBundle(),
       new Econemon\Bootsy\ErrorBundle\EconemonBootsyErrorBundle(),
+      new Econemon\Bootsy\ApplicationBundle\EconemonBootsyApplicationBundle(),
     );
 
     if (in_array($this->getEnvironment(), array('dev', 'test'))) {
