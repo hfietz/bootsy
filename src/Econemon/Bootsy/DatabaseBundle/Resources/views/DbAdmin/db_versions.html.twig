@@ -1,6 +1,6 @@
-{% extends '::html5-default.html.twig' %}
+{% extends 'EconemonBootsyApplicationBundle:Main:main.html.twig' %}
 
-{%  block body %}
+{%  block content %}
     <h2>Database versions:</h2>
     {%  if versions is defined and versions %}
         <form action="{{ path('db_run_updates') }}">
