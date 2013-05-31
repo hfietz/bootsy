@@ -65,9 +65,9 @@ class DbAdminController implements DatabaseServiceAware
       return $this->statusAction(); // TODO: Investigate: How will forwarding be handled in 2.3? Are there any issues forwarding like this?
     } else {
 
-      $versions = array();
-      foreach ($this->databaseService->loadScripts() as $script) {
-        if ($script->isNew() || $script->isUpdated()) {
+      $selection = array_flip($req->query->filter('selection', array()));
+      foreach ($this->databaseService->loadScripts() as $key => $script) {
+        if (array_key_exists($script->getNormalizedPath(), $selection)) {
           $this->databaseService->runScript($script);
         }
       }

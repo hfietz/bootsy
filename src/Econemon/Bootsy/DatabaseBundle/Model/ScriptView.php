@@ -18,17 +18,19 @@ class ScriptView
 
   public $status;
 
+  public $preselect = FALSE;
+
   public function __construct(Script $script)
   {
-    $this->file = $script->getRelativePathname();
-    $this->currentVersion = $script->getHash();
+    $this->file = $script->getNormalizedPath();
+    $this->currentVersion = $this->shortenVersionForDisplay($script->getHash());
     $this->lastChanged = $script->getDateTime();
     if ($script->isNew()) {
       $this->status = 'new';
     } else {
       $lastRun = $script->getLatestRun();
       $this->lastTimeRun = $lastRun->getDateTime();
-      $this->lastVersionRun = $lastRun->hash;
+      $this->lastVersionRun = $this->shortenVersionForDisplay($lastRun->hash);
       if ($script->isAtLatestVersion()) {
         $this->status = 'current';
       } else {
@@ -38,6 +40,17 @@ class ScriptView
           $this->status = 'changed';
         }
       }
+    }
+
+    $this->preselect = $script->isNew() || $script->isUpdated();
+  }
+
+  public function shortenVersionForDisplay($hash)
+  {
+    if (strlen($hash) < 8) {
+      return $hash;
+    } else {
+      return substr($hash, 0, 4) . '..' . substr($hash, -4);
     }
   }
 }
