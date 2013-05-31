@@ -26,6 +26,9 @@ twig:
     strict_variables: %kernel.debug%
 
 services:
+  menu_service:
+    class: Econemon\Bootsy\ApplicationBundle\Service\MenuManager
+
   error_service:
     class: Econemon\Bootsy\ErrorBundle\Service\ErrorService
     arguments: ['@kernel']
