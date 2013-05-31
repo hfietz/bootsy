@@ -26,6 +26,11 @@ twig:
     strict_variables: %kernel.debug%
 
 services:
+  econemon_bootsy_main:
+    class: Econemon\Bootsy\ApplicationBundle\Controller\MainController
+    calls:
+      - [ setTemplateEngine, ["@templating"]]
+
   menu_service:
     class: Econemon\Bootsy\ApplicationBundle\Service\MenuManager
 

@@ -2,6 +2,9 @@ login:
   path: /login
   defaults: { _controller: EconemonBootsyAccessBundle:Session:login }
 
+app:
+  resource: "@EconemonBootsyApplicationBundle/Resources/config/routing.yml"
+
 db_admin:
   resource: "@EconemonBootsyDatabaseBundle/Resources/config/routing.yml"
   prefix: /admin/db

@@ -53,7 +53,7 @@ class MainController implements MenuAware
   /**
    * @param \Econemon\Bootsy\ApplicationBundle\Service\MenuManager $menuManager
    */
-  public function setMenuManager($menuManager)
+  public function setMenuManager(MenuManager $menuManager)
   {
     $this->menuManager = $menuManager;
   }
