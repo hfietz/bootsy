@@ -14,6 +14,7 @@ The current code is very much WIP and even features that are complete might stil
 
 Currently functional URLs:
 
+* /
 * /admin/db/status
 * /admin/db/versions
 * /admin/errors
