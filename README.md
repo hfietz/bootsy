@@ -20,7 +20,6 @@ Currently functional URLs:
 * /admin/errors
 
 Current todos:
-* create a main layout and a route to /
 * secure admin pages and establish a user / rights management
 
 ### Installation
