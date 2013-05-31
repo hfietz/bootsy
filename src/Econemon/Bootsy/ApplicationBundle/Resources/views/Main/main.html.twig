@@ -28,16 +28,17 @@
     {% endblock %}
     <div id="frame">{% block frame %}
             {% block navigation %}
-                {# TODO: Build a proper, recursive template structure for the menu #}
                 {% if menu is defined and menu %}
                     <ul id="main-navi" class="menu">
                         {% for item in menu %}{% spaceless %}
-                            <li>
-                                {% if item.target is defined %}<a href="{{ path(item.target) }}">{{ item.label }}</a> {% else %}{{ item.label }}{% endif %}
-                                {% if item.submenu is defined and item.submenu %}
+                            <li class="level-{{ item.level }}">
+                                {% if item.target %}<a href="{{ path(item.target) }}">{{ item.label }}</a> {% else %}{{ item.label }}{% endif %}
+                                {% if item.children %}
                                     <ul class="submenu">
-                                        {% for subitem in item.submenu %}
-                                            <li><a href="{{ path(subitem.target) }}">{{ subitem.label }}</a></li>
+                                        {% for subitem in item.children %}
+                                            <li class="level-{{ subitem.level }}">
+                                                {% if subitem.target %}<a href="{{ path(subitem.target) }}">{{ subitem.label }}</a> {% else %}{{ subitem.label }}{% endif %}
+                                            </li>
                                         {% endfor %}
                                     </ul>
                                 {% endif %}
