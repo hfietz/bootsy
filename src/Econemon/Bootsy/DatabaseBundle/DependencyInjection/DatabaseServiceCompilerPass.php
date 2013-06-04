@@ -11,7 +11,7 @@ class DatabaseServiceCompilerPass implements CompilerPassInterface
   const CLIENT_INTERFACE_NAME = 'Econemon\Bootsy\DatabaseBundle\Service\DatabaseServiceAware';
   const PROVIDER_INTERFACE_NAME = 'Econemon\Bootsy\DatabaseBundle\Service\DatabaseUpdateProvider';
   const SETTER_NAME = 'setDatabaseService';
-  const SERVICE_ID = 'db_service';
+  const SERVICE_ID = 'econemon_bootsy_database';
   const REGISTRATION_CALLBACK = 'registerSchemaProviderService';
 
   /**

@@ -10,7 +10,7 @@ class MenuCompilerPass implements CompilerPassInterface
 {
   const CLIENT_INTERFACE_NAME = 'Econemon\Bootsy\ApplicationBundle\Service\MenuAware';
   const SETTER_NAME = 'setMenuManager';
-  const SERVICE_ID = 'menu_service';
+  const SERVICE_ID = 'econemon_bootsy_menu';
 
   /**
    * You can modify the container here before it is dumped to PHP code.

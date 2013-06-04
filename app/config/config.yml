@@ -1,6 +1,9 @@
 imports:
     - { resource: parameters.yml }
     - { resource: security.yml }
+    - { resource: "@EconemonBootsyApplicationBundle/Resources/config/config.yml" }
+    - { resource: "@EconemonBootsyDatabaseBundle/Resources/config/config.yml" }
+    - { resource: "@EconemonBootsyErrorBundle/Resources/config/config.yml" }
 
 framework:
     #esi:             ~
@@ -24,41 +27,6 @@ framework:
 twig:
     debug:            %kernel.debug%
     strict_variables: %kernel.debug%
-
-services:
-  econemon_bootsy_main:
-    class: Econemon\Bootsy\ApplicationBundle\Controller\MainController
-    calls:
-      - [ setTemplateEngine, ["@templating"]]
-
-  menu_service:
-    class: Econemon\Bootsy\ApplicationBundle\Service\MenuManager
-
-  error_service:
-    class: Econemon\Bootsy\ErrorBundle\Service\ErrorService
-    arguments: ['@kernel']
-    tags:
-      - { name: kernel.event_listener, event: kernel.exception, method: onKernelException }
-
-  db_service:
-    class: Econemon\Bootsy\DatabaseBundle\Service\DatabaseService
-    calls:
-      - [ setDbConnection, ["@database_connection"]]
-      - [ setKernel, ["@kernel"]]
-
-  error_frontend:
-    class: Econemon\Bootsy\ErrorBundle\Controller\ErrorFrontendController
-    calls:
-      - [ setTemplateEngine, ["@templating"]]
-      - [ setRouter, ["@router"]]
-      - [ setErrorService, ["@error_service"]]
-
-  db_admin_frontend:
-    class: Econemon\Bootsy\DatabaseBundle\Controller\DbAdminController
-    calls:
-      - [ setTemplateEngine, ["@templating"]]
-      - [ setRouter, ["@router"]]
-      - [ setFormFactory, ["@form.factory"]]
 
 doctrine:
   dbal:

@@ -1,0 +1,13 @@
+services:
+  econemon_bootsy_error:
+    class: Econemon\Bootsy\ErrorBundle\Service\ErrorService
+    arguments: ['@kernel']
+    tags:
+      - { name: kernel.event_listener, event: kernel.exception, method: onKernelException }
+
+  econemon_bootsy_error_frontend:
+    class: Econemon\Bootsy\ErrorBundle\Controller\ErrorFrontendController
+    calls:
+      - [ setTemplateEngine, ["@templating"]]
+      - [ setRouter, ["@router"]]
+      - [ setErrorService, ["@econemon_bootsy_error"]]

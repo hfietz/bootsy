@@ -1,15 +1,15 @@
 db_versions:
   path: /versions
-  defaults: { _controller: db_admin_frontend:versionsAction }
+  defaults: { _controller: econemon_bootsy_database_frontend:versionsAction }
 
 db_run_updates:
   path: /versions/run
-  defaults: { _controller: db_admin_frontend:runUpdatesAction }
+  defaults: { _controller: econemon_bootsy_database_frontend:runUpdatesAction }
 
 db_status:
   path: /status
-  defaults: { _controller: db_admin_frontend:statusAction }
+  defaults: { _controller: econemon_bootsy_database_frontend:statusAction }
 
 db_configure:
   path: /configure
-  defaults: { _controller: db_admin_frontend:configureAction }
+  defaults: { _controller: econemon_bootsy_database_frontend:configureAction }

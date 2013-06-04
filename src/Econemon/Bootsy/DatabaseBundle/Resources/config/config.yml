@@ -1,0 +1,13 @@
+services:
+  econemon_bootsy_database:
+    class: Econemon\Bootsy\DatabaseBundle\Service\DatabaseService
+    calls:
+      - [ setDbConnection, ["@database_connection"]]
+      - [ setKernel, ["@kernel"]]
+
+  econemon_bootsy_database_frontend:
+    class: Econemon\Bootsy\DatabaseBundle\Controller\DbAdminController
+    calls:
+      - [ setTemplateEngine, ["@templating"]]
+      - [ setRouter, ["@router"]]
+      - [ setFormFactory, ["@form.factory"]]
