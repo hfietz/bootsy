@@ -18,9 +18,11 @@ Currently functional URLs:
 * /admin/db/status
 * /admin/db/versions
 * /admin/errors
+* /login
+* /register
 
 Current todos:
-* secure admin pages and establish a user / rights management
+* make prettier login / registration pages
 
 ### Installation
 * git clone
@@ -44,13 +46,12 @@ So far, it is using:
 
 * Symfony 2.2.1
 * Doctrine 2.2 (only the DBAL is used so far)
-
-It will probably also use:
-
 * Swift Mailer
 * Friends Of Symfony User Bundle
 
-I am still very hesitant to use the Doctrine ORM, not because there's anything wrong with it, rather because I tend to
+Doctrine ORM is used by the FOSUserBundle to find users in the db.
+
+I am still very hesitant to use the Doctrine ORM in general, not because there's anything wrong with it, rather because I tend to
 not get a lot out of ORMs in general. This is mostly due to a habit of creating a rather rich model layer that often
 turns out to map badly to a normalized database.
 
