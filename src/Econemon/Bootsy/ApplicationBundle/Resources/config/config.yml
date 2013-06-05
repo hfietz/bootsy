@@ -6,5 +6,10 @@ services:
   econemon_bootsy_menu:
     class: Econemon\Bootsy\ApplicationBundle\Service\MenuManager
 
+  econemon_bootsy_main:
+    class: Econemon\Bootsy\ApplicationBundle\Controller\MainController
+    calls:
+      - [ setTemplateEngine, ["@templating"]]
+
 swiftmailer:
   transport: smtp
