@@ -1,0 +1,8 @@
+Econemon\Bootsy\UserBundle\Entity\User:
+    type:  entity
+    table: app_user
+    id:
+        id:
+            type: integer
+            generator:
+                strategy: AUTO

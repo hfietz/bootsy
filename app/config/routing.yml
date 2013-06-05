@@ -1,6 +1,5 @@
-login:
-  path: /login
-  defaults: { _controller: EconemonBootsyAccessBundle:Session:login }
+user:
+  resource: "@EconemonBootsyUserBundle/Resources/config/routing.yml"
 
 app:
   resource: "@EconemonBootsyApplicationBundle/Resources/config/routing.yml"

@@ -22,6 +22,8 @@ class AppKernel extends Kernel
       new Econemon\Bootsy\DatabaseBundle\EconemonBootsyDatabaseBundle(),
       new Econemon\Bootsy\ErrorBundle\EconemonBootsyErrorBundle(),
       new Econemon\Bootsy\ApplicationBundle\EconemonBootsyApplicationBundle(),
+      new FOS\UserBundle\FOSUserBundle(),
+      new Econemon\Bootsy\UserBundle\EconemonBootsyUserBundle(),
     );
 
     if (in_array($this->getEnvironment(), array('dev', 'test'))) {

@@ -4,6 +4,7 @@ imports:
     - { resource: "@EconemonBootsyApplicationBundle/Resources/config/config.yml" }
     - { resource: "@EconemonBootsyDatabaseBundle/Resources/config/config.yml" }
     - { resource: "@EconemonBootsyErrorBundle/Resources/config/config.yml" }
+    - { resource: "@EconemonBootsyUserBundle/Resources/config/config.yml" }
 
 framework:
     #esi:             ~
@@ -35,3 +36,7 @@ doctrine:
     dbname: '%database_name%'
     user: '%database_user%'
     password: '%database_password%'
+
+  orm:
+      auto_generate_proxy_classes: %kernel.debug%
+      auto_mapping: true

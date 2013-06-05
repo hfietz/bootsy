@@ -1,0 +1,11 @@
+services:
+  econemon_bootsy_user:
+    class: Econemon\Bootsy\UserBundle\Service\UserService
+    parent: econemon_bootsy_base
+
+fos_user:
+  db_driver: orm
+  firewall_name: main
+  user_class: Econemon\Bootsy\UserBundle\Entity\User
+  service:
+    mailer: fos_user.mailer.noop
