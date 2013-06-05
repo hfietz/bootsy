@@ -10,7 +10,7 @@
         {% if session is defined %}
             {{ render(controller('EconemonBootsySecurityBundle:Session:status')) }}
         {% else %}
-            <a href="{{ path('login') }}">Login</a>
+            <a href="{{ path('fos_user_security_login') }}">Login</a>
         {% endif %}
         </div>{% endspaceless %}
     {% endblock %}
