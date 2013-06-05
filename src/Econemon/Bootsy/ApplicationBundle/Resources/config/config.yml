@@ -1,3 +1,7 @@
 services:
+  econemon_bootsy_base:
+    abstract: true
+    arguments: ['@kernel']
+
   econemon_bootsy_menu:
     class: Econemon\Bootsy\ApplicationBundle\Service\MenuManager

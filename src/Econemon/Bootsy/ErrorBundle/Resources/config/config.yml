@@ -1,7 +1,7 @@
 services:
   econemon_bootsy_error:
     class: Econemon\Bootsy\ErrorBundle\Service\ErrorService
-    arguments: ['@kernel']
+    parent: econemon_bootsy_base
     tags:
       - { name: kernel.event_listener, event: kernel.exception, method: onKernelException }
 

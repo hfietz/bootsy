@@ -2,6 +2,7 @@
 
 namespace Econemon\Bootsy\ErrorBundle\Service;
 
+use Econemon\Bootsy\ApplicationBundle\Service\BaseService;
 use Exception;
 
 use Econemon\Bootsy\DatabaseBundle\Service\DatabaseService;
@@ -16,12 +17,9 @@ use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpKernel\KernelInterface;
 
-class ErrorService implements EventSubscriberInterface, DatabaseServiceAware, DatabaseUpdateProvider
+class ErrorService extends BaseService implements EventSubscriberInterface, DatabaseServiceAware
 {
-  /**
-   * @var KernelInterface
-   */
-  protected $kernel;
+
 
   /**
    * @var DatabaseService
@@ -33,11 +31,6 @@ class ErrorService implements EventSubscriberInterface, DatabaseServiceAware, Da
     return array(
       'kernel.exception' => array('onKernelException', 0),
     );
-  }
-
-  public function __construct(KernelInterface $kernel = NULL)
-  {
-    $this->kernel = $kernel;
   }
 
   public function onKernelException(GetResponseForExceptionEvent $event)
@@ -95,19 +88,6 @@ class ErrorService implements EventSubscriberInterface, DatabaseServiceAware, Da
     $this->databaseService = $databaseService;
   }
 
-  /**
-   * @return string
-   */
-  public function getDbScriptPath()
-  {
-    // TODO: We want a reliable and framework-compliant way to determine the bundle path relative to the installation root
-    $fs = new Filesystem();
-    $reflection = new \ReflectionObject($this);
-    $path = realpath(dirname($reflection->getFileName()) . DIRECTORY_SEPARATOR . join(DIRECTORY_SEPARATOR, array('..', 'Resources', 'db')));
-    $root = realpath($this->kernel->getRootDir() . '/..'); // KernelInterface::getRootDir always returns Unix-style paths
-
-    return $fs->makePathRelative($path, $root);
-  }
 
   /**
    * Bail out in some graceful way when the error handler itself has errors.
