@@ -8,4 +8,7 @@ fos_user:
   firewall_name: main
   user_class: Econemon\Bootsy\UserBundle\Entity\User
   service:
-    mailer: fos_user.mailer.noop
+    mailer: fos_user.mailer.twig_swift
+  registration:
+    confirmation:
+      enabled: true

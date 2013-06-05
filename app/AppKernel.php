@@ -24,6 +24,7 @@ class AppKernel extends Kernel
       new Econemon\Bootsy\ApplicationBundle\EconemonBootsyApplicationBundle(),
       new FOS\UserBundle\FOSUserBundle(),
       new Econemon\Bootsy\UserBundle\EconemonBootsyUserBundle(),
+      new Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle(),
     );
 
     if (in_array($this->getEnvironment(), array('dev', 'test'))) {

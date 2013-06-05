@@ -5,3 +5,6 @@ services:
 
   econemon_bootsy_menu:
     class: Econemon\Bootsy\ApplicationBundle\Service\MenuManager
+
+swiftmailer:
+  transport: smtp
