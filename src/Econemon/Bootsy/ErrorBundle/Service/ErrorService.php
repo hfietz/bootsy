@@ -5,27 +5,15 @@ namespace Econemon\Bootsy\ErrorBundle\Service;
 use Econemon\Bootsy\ApplicationBundle\Service\BaseService;
 use Exception;
 
-use Econemon\Bootsy\DatabaseBundle\Service\DatabaseService;
-use Econemon\Bootsy\DatabaseBundle\Service\DatabaseServiceAware;
-use Econemon\Bootsy\DatabaseBundle\Service\DatabaseUpdateProvider;
 use Econemon\Bootsy\ErrorBundle\Model\ErrorHandlerException;
 use Econemon\Bootsy\ErrorBundle\Model\LoggedException;
 use Econemon\Bootsy\ErrorBundle\Model\LoggedExceptionMapper;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
-use Symfony\Component\HttpKernel\KernelInterface;
 
-class ErrorService extends BaseService implements EventSubscriberInterface, DatabaseServiceAware
+class ErrorService extends BaseService implements EventSubscriberInterface
 {
-
-
-  /**
-   * @var DatabaseService
-   */
-  protected $databaseService;
-
   public static function getSubscribedEvents()
   {
     return array(
@@ -78,14 +66,6 @@ class ErrorService extends BaseService implements EventSubscriberInterface, Data
   protected function triggerNotifications($error)
   {
     // TODO
-  }
-
-  /**
-   * @param \Econemon\Bootsy\DatabaseBundle\Service\DatabaseService $databaseService
-   */
-  function setDatabaseService(DatabaseService $databaseService = NULL)
-  {
-    $this->databaseService = $databaseService;
   }
 
 
