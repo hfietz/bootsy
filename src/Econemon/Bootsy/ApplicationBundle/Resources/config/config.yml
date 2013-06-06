@@ -11,5 +11,9 @@ services:
     calls:
       - [ setTemplateEngine, ["@templating"]]
 
+  econemon_bootsy_config:
+    class: Econemon\Bootsy\ApplicationBundle\Service\ConfigManager
+    parent: econemon_bootsy_base
+
 swiftmailer:
   transport: smtp

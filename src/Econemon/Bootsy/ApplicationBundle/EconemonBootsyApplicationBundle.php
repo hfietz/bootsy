@@ -3,6 +3,7 @@
 namespace Econemon\Bootsy\ApplicationBundle;
 
 use Econemon\Bootsy\ApplicationBundle\DependencyInjection\ImplementationDetectorCompilerPass;
+use Econemon\Bootsy\ApplicationBundle\Service\ConfigManager;
 use Econemon\Bootsy\ApplicationBundle\Service\MenuManager;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
@@ -16,6 +17,8 @@ class EconemonBootsyApplicationBundle extends Bundle
     $pass = new ImplementationDetectorCompilerPass();
 
     $pass->service(MenuManager::SERVICE_ID)->catersFor(MenuManager::CLIENT_INTERFACE_NAME)->via(MenuManager::SETTER_NAME);
+
+    $pass->service(ConfigManager::SERVICE_ID)->catersFor(ConfigManager::CLIENT_IFACE)->via(ConfigManager::CLIENT_SETTER);
 
     $container->addCompilerPass($pass);
   }
