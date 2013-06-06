@@ -6,6 +6,10 @@ use Econemon\Bootsy\ApplicationBundle\View\MenuItem;
 
 class MenuManager
 {
+  const CLIENT_INTERFACE_NAME = 'Econemon\Bootsy\ApplicationBundle\Service\MenuAware';
+  const SETTER_NAME = 'setMenuManager';
+  const SERVICE_ID = 'econemon_bootsy_menu';
+
   /**
    * @var MenuItem[]
    */

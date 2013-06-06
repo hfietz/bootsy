@@ -25,6 +25,12 @@ use Symfony\Component\Yaml\Yaml;
 
 class DatabaseService
 {
+  const CLIENT_INTERFACE_NAME = 'Econemon\Bootsy\DatabaseBundle\Service\DatabaseServiceAware';
+  const PROVIDER_INTERFACE_NAME = 'Econemon\Bootsy\DatabaseBundle\Service\DatabaseUpdateProvider';
+  const SETTER_NAME = 'setDatabaseService';
+  const SERVICE_ID = 'econemon_bootsy_database';
+  const REGISTRATION_CALLBACK = 'registerSchemaProviderService';
+
   /**
    * relative to kernel root directory
    * @var string
@@ -39,7 +45,7 @@ class DatabaseService
   /**
    * @var string[]
    */
-  protected $schemaProviders = array();
+  protected $scriptPaths = array();
 
   /**
    * @var Connection
@@ -52,11 +58,14 @@ class DatabaseService
   protected $kernel;
 
   /**
-   * @param string $serviceId
+   * @param DatabaseUpdateProvider $service
    */
-  public function registerSchemaProviderService($serviceId)
+  public function registerSchemaProviderService($service)
   {
-    $this->schemaProviders[] = $serviceId;
+    $path = $service->getDbScriptPath();
+    if (NULL !== $path) {
+      $this->scriptPaths[] = $path;
+    }
   }
 
   /**
@@ -140,18 +149,7 @@ class DatabaseService
 
   public function getScriptPaths()
   {
-    /**
-     * @var DatabaseUpdateProvider $provider
-     */
-    $container = $this->kernel->getContainer();
-    $paths = array();
-
-    foreach ($this->schemaProviders as $serviceId) {
-      $provider = $container->get($serviceId);
-      $paths[] = $provider->getDbScriptPath();
-    }
-
-    return $paths;
+    return $this->scriptPaths;
   }
 
   protected function getInstallationDir()

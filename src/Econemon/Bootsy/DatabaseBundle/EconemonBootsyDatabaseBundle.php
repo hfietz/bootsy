@@ -1,7 +1,8 @@
 <?php
 namespace Econemon\Bootsy\DatabaseBundle;
 
-use Econemon\Bootsy\DatabaseBundle\DependencyInjection\DatabaseServiceCompilerPass;
+use Econemon\Bootsy\ApplicationBundle\DependencyInjection\ImplementationDetectorCompilerPass;
+use Econemon\Bootsy\DatabaseBundle\Service\DatabaseService;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
@@ -11,7 +12,19 @@ class EconemonBootsyDatabaseBundle extends Bundle
   {
     parent::build($container);
 
-    $container->addCompilerPass(new DatabaseServiceCompilerPass());
+    $pass = new ImplementationDetectorCompilerPass();
+
+    $pass
+      ->service(DatabaseService::SERVICE_ID)
+      ->catersFor(DatabaseService::CLIENT_INTERFACE_NAME)
+      ->via(DatabaseService::SETTER_NAME);
+
+    $pass
+      ->service(DatabaseService::SERVICE_ID)
+      ->consumes(DatabaseService::PROVIDER_INTERFACE_NAME)
+      ->via(DatabaseService::REGISTRATION_CALLBACK);
+
+    $container->addCompilerPass($pass);
   }
 
 }
