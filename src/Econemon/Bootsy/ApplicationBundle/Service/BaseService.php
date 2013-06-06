@@ -29,6 +29,6 @@ abstract class BaseService implements DatabaseUpdateProvider
     $path = realpath(dirname($reflection->getFileName()) . DIRECTORY_SEPARATOR . join(DIRECTORY_SEPARATOR, array('..', 'Resources', 'db')));
     $root = realpath($this->kernel->getRootDir() . '/..'); // KernelInterface::getRootDir always returns Unix-style paths
 
-    return $fs->makePathRelative($path, $root);
+    return $path ? $fs->makePathRelative($path, $root) : NULL;
   }
 }
