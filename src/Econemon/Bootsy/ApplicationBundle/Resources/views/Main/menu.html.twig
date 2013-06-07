@@ -1,0 +1,17 @@
+<ul class="menu level-{{ menu.level }}">
+    {% if menu.children %}{% for item in menu.children %}
+    <li class="level-{{ item.level }}">
+        {% spaceless %}
+        {% if item.target %}
+            <a href="{{ path(item.target) }}">{{ item.label }}</a>
+        {% else %}
+            {{ item.label }}
+        {% endif %}
+        {%  if item.children %}
+            {{ include('EconemonBootsyApplicationBundle:Main:menu.html.twig', { 'menu': item }) }}
+        {% endif %}
+        {% endspaceless %}
+    </li>
+    {% endfor %}
+    {% endif %}
+</ul>

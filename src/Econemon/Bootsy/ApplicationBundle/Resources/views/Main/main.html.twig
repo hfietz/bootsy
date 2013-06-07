@@ -29,22 +29,7 @@
     <div id="frame">{% block frame %}
             {% block navigation %}
                 {% if menu is defined and menu %}
-                    <ul id="main-navi" class="menu">
-                        {% for item in menu %}{% spaceless %}
-                            <li class="level-{{ item.level }}">
-                                {% if item.target %}<a href="{{ path(item.target) }}">{{ item.label }}</a> {% else %}{{ item.label }}{% endif %}
-                                {% if item.children %}
-                                    <ul class="submenu">
-                                        {% for subitem in item.children %}
-                                            <li class="level-{{ subitem.level }}">
-                                                {% if subitem.target %}<a href="{{ path(subitem.target) }}">{{ subitem.label }}</a> {% else %}{{ subitem.label }}{% endif %}
-                                            </li>
-                                        {% endfor %}
-                                    </ul>
-                                {% endif %}
-                            </li>
-                        {% endspaceless %}{% endfor %}
-                    </ul>
+                    {{ include('EconemonBootsyApplicationBundle:Main:menu.html.twig', { 'menu': menu }) }}
                 {% endif %}
             {% endblock %}
             <div id="content">

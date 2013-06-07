@@ -11,10 +11,15 @@ class MenuManager
   const SERVICE_ID = 'econemon_bootsy_menu';
 
   /**
-   * @var MenuItem[]
+   * @var MenuItem
    */
 
-  protected $menu = array();
+  protected $menu = NULL;
+
+  public function __construct($rootLabel = 'Home', $rootTarget = NULL)
+  {
+    $this->menu = new MenuItem($rootLabel, $rootTarget);
+  }
 
   /**
    * @return mixed
@@ -26,7 +31,7 @@ class MenuManager
 
   public function addMenuItem(MenuItem $item)
   {
-    $this->menu[] = $item;
+    $this->menu->addChildItem($item);
 
     return $this;
   }

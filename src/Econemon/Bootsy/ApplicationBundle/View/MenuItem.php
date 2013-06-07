@@ -60,11 +60,9 @@ class MenuItem
 
   public function addChild($label, $target = NULL)
   {
-    $child = new MenuItem($label, $target, $this->level + 1);
+    $child = new MenuItem($label, $target);
 
-    $this->children[] = $child;
-
-    return $child;
+    return $this->addChildItem($child);
   }
 
   public function hasTarget()
@@ -83,5 +81,17 @@ class MenuItem
   public function hasChildren()
   {
     return count($this->children) > 0;
+  }
+
+  /**
+   * @param MenuItem $child
+   */
+  public function addChildItem(MenuItem $child)
+  {
+    $child->level = $this->level + 1;
+
+    $this->children[] = $child;
+
+    return $child;
   }
 }
