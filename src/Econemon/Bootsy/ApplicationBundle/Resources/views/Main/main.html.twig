@@ -7,7 +7,7 @@
 {% block body %}
     {% block session %}
         <div id="session-status">{% spaceless %}
-        {% if session is defined %}
+        {% if view.session is defined %}
             {{ render(controller('EconemonBootsySecurityBundle:Session:status')) }}
         {% else %}
             <a href="{{ path('fos_user_security_login') }}">Login</a>
@@ -16,20 +16,20 @@
     {% endblock %}
     {% block logo %}
         <div id="logo">
-            {% if logo is defined %}
-                {% if logo.image is defined %}
-                    <img src="{{ asset(logo.image.src) }}" class="logo">
+            {% if view.logo is defined %}
+                {% if view.logo.image is defined %}
+                    <img src="{{ asset(view.logo.image.src) }}" class="logo">
                 {% endif %}
-                {% if logo.headline is defined %}
-                    <h1>{{ logo.headline }}</h1>
+                {% if view.logo.headline is defined %}
+                    <h1>{{ view.logo.headline }}</h1>
                 {% endif %}
             {% endif %}
         </div>
     {% endblock %}
     <div id="frame">{% block frame %}
             {% block navigation %}
-                {% if menu is defined and menu %}
-                    {{ include('EconemonBootsyApplicationBundle:Main:menu.html.twig', { 'menu': menu }) }}
+                {% if view.menu is defined and view.menu %}
+                    {{ include('EconemonBootsyApplicationBundle:Main:menu.html.twig', { 'menu': view.menu }) }}
                 {% endif %}
             {% endblock %}
             <div id="content">

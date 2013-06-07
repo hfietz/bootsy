@@ -5,6 +5,8 @@ namespace Econemon\Bootsy\ApplicationBundle\Controller;
 use Econemon\Bootsy\ApplicationBundle\Service\MenuAware;
 use Econemon\Bootsy\ApplicationBundle\Service\MenuManager;
 
+use Econemon\Bootsy\ApplicationBundle\View\MainView;
+use Econemon\Bootsy\ApplicationBundle\View\MenuItem;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 
@@ -22,23 +24,42 @@ class MainController implements MenuAware
 
   public function indexAction()
   {
-    $view = array();
+    $view = $this->initializeMainView();
 
-    if (NULL !== $this->menuManager) {
-      $menu = $this->menuManager->createMenuItem('System');
-      $menu->addChild('Wall of Shame', 'error_list');
-      $menu->addChild('DB status and config', 'db_status');
-      $menu->addChild('DB versions', 'db_versions');
+    return $this->render('EconemonBootsyApplicationBundle:Main:index.html.twig', array('view' => $view));
+  }
 
-      $menu = $this->menuManager->createMenuItem('Error pages');
-      $menu->addChild('Not found', 'test_404');
-      $menu->addChild('Server error', 'test_500');
-      $menu->addChild('Unknown error', 'test_error');
+  /**
+   * @return MenuItem
+   */
+  protected function initializeMenu()
+  {
+    $menu = $this->menuManager->createMenuItem('System');
+    $menu->addChild('Wall of Shame', 'error_list');
+    $menu->addChild('DB status and config', 'db_status');
+    $menu->addChild('DB versions', 'db_versions');
 
-      $view['menu'] = $this->menuManager->getMenu();
-    }
+    $menu = $this->menuManager->createMenuItem('Error pages');
+    $menu->addChild('Not found', 'test_404');
+    $menu->addChild('Server error', 'test_500');
+    $menu->addChild('Unknown error', 'test_error');
 
-    return $this->render('EconemonBootsyApplicationBundle:Main:index.html.twig', $view);
+    $menuView = $this->menuManager->getMenu();
+    return $menuView;
+  }
+
+  /**
+   * @return MainView
+   */
+  protected function initializeMainView()
+  {
+    $view = new MainView();
+
+    $view->setPageTitle('Bootsy');
+    $view->setClaimHeadline('Bootsy Web Application');
+
+    $view->setMenu($this->initializeMenu());
+    return $view;
   }
 
   public function render($view, $parameters)

@@ -22,7 +22,7 @@ class MenuManager
   }
 
   /**
-   * @return mixed
+   * @return MenuItem
    */
   public function getMenu()
   {
