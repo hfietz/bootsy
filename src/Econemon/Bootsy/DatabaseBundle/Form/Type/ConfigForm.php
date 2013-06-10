@@ -2,12 +2,12 @@
 
 namespace Econemon\Bootsy\DatabaseBundle\Form\Type;
 
+use Econemon\Bootsy\ApplicationBundle\Form\BaseForm;
 use Econemon\Bootsy\DatabaseBundle\Form\Model\ConfigFormData;
-use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
-class ConfigForm extends AbstractType
+class ConfigForm extends BaseForm
 {
   public function buildForm(FormBuilderInterface $builder, array $options)
   {
@@ -36,32 +36,5 @@ class ConfigForm extends AbstractType
     $resolver->setDefaults(array(
       'data_class' => ConfigFormData::getClassName(), // this makes the class visible to the IDE, so it is refactorable, which a string literal would not be.
     ));
-  }
-
-  /**
-   * @param FormBuilderInterface $builder
-   * @param array $fields
-   * @param string $type
-   * @param array $options
-   * @return void
-   */
-  public function addFields(FormBuilderInterface $builder, $fields, $type = 'text', $options = array())
-  {
-    foreach ($fields as $name => $label) {
-      if (is_numeric($name)) {
-        $name = $label;
-        $label = $this->createAutoLabelFromName($name);
-      }
-      $builder->add($name, $type, array_merge($options, array('label' => $label)));
-    }
-  }
-
-  /**
-   * @param $name
-   * @return string
-   */
-  protected function createAutoLabelFromName($name)
-  {
-    return ucfirst(strtolower(str_replace('_', '', $name)));
   }
 }
