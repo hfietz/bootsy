@@ -7,6 +7,9 @@ fos_user:
   db_driver: orm
   firewall_name: main
   user_class: Econemon\Bootsy\UserBundle\Entity\User
+  from_email:
+    address: "%system_email_address%"
+    sender_name: "%system_email_sender%"
   service:
     mailer: fos_user.mailer.twig_swift
   registration:
