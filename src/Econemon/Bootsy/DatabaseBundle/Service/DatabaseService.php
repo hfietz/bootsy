@@ -353,25 +353,38 @@ class DatabaseService
     return $relPath;
   }
 
+  public function merge($tableName, $data, $keyFields = NULL, $idField = 'id')
+  {
+    $searchFields = $this->extractSearchFields($data, $keyFields);
+
+    $id = $this->inTransaction(array($this, 'unsafeMerge'), $tableName, $data, $idField, $searchFields, TRUE);
+
+    return $id;
+  }
+
   public function selectOrInsert($tableName, $data, $keyFields = NULL, $idField = 'id')
   {
     $searchFields = $this->extractSearchFields($data, $keyFields);
 
-    $svc = $this;
-    $id = $this->inTransaction(function () use ($svc, $tableName, $data, $idField, $searchFields) {
-      $id = $svc->unsafeSelectId($tableName, $searchFields, $idField);
-      if (NULL === $id) {
-        $success = $svc->unsafeInsert($tableName, $data);
-        if (TRUE === $success) {
-          $id = $svc->unsafeSelectId($tableName, $searchFields, $idField);
-          return $id;
-        } else {
-          throw new DatabaseException('Insert failed for unknown reasons');
-        }
-      }
-      return $id;
-    });
+    $id = $this->inTransaction(array($this, 'unsafeMerge'), $tableName, $data, $idField, $searchFields, FALSE);
 
+    return $id;
+  }
+
+  protected function unsafeMerge($tableName, $data, $idField, $searchFields, $withUpdate = TRUE)
+  {
+    $id = $this->unsafeSelectId($tableName, $searchFields, $idField);
+    if (NULL === $id) {
+      $success = $this->unsafeInsert($tableName, $data);
+      if (TRUE === $success) {
+        $id = $this->unsafeSelectId($tableName, $searchFields, $idField);
+        return $id;
+      } else {
+        throw new DatabaseException('Insert failed for unknown reasons');
+      }
+    } else if (TRUE === $withUpdate) {
+      $success = $this->unsafeUpdate($tableName, $data, $id, $idField);
+    }
     return $id;
   }
 
@@ -399,7 +412,7 @@ class DatabaseService
    * @param $data
    * @return bool
    */
-  public function unsafeInsert($tableName, $data)
+  protected function unsafeInsert($tableName, $data)
   {
     $sql = 'INSERT INTO ' . $tableName . ' (' . join(', ', array_keys($data)) . ') VALUES(' . join(', ', array_fill(0, count($data), '?')) . ')';
     $stmt = $this->db_connection->prepare($sql);
@@ -419,7 +432,7 @@ class DatabaseService
    * @param $searchFields
    * @return mixed
    */
-  public function unsafeSelect($tableName, $fields = NULL, $searchFields = array())
+  protected function unsafeSelect($tableName, $fields = NULL, $searchFields = array())
   {
     $select = $this->db_connection->createQueryBuilder()->select($fields);
     $select->from($tableName, 't');
@@ -439,7 +452,7 @@ class DatabaseService
    * @param $idField
    * @return int|null
    */
-  public function unsafeSelectId($tableName, $searchFields = array(), $idField = 'id')
+  protected function unsafeSelectId($tableName, $searchFields = array(), $idField = 'id')
   {
     $result = $this->unsafeSelect($tableName, $idField, $searchFields);
 
@@ -487,7 +500,8 @@ class DatabaseService
   {
     $this->db_connection->beginTransaction();
     try {
-      $value = call_user_func($fn);
+      $params = array_slice(func_get_args(), 1);
+      $value = call_user_func_array($fn, $params);
       $this->db_connection->commit();
     } catch (Exception $e) {
       $this->db_connection->rollBack();
@@ -547,5 +561,28 @@ class DatabaseService
     }
 
     return $result;
+  }
+
+  protected function unsafeUpdate($tableName, $data, $id, $idField = 'id')
+  {
+    if (array_key_exists($idField, $data)) {
+      unset($data[$idField]);
+    }
+
+    $assignments = array();
+    foreach (array_keys($data) as $name) {
+      $assignments[] = sprintf('%1$s = :%1$s', $name);
+    }
+
+    $sql = 'UPDATE ' . $tableName . ' SET ' . join(', ', $assignments) . ' WHERE ' . $idField . ' = :' . $idField;
+    $stmt = $this->db_connection->prepare($sql);
+
+    foreach ($data as $name => $value) {
+      $stmt->bindValue($name, $value);
+    }
+    $stmt->bindValue($idField, $id);
+
+    $success = $stmt->execute();
+    return $success;
   }
 }
