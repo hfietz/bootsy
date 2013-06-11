@@ -1,19 +1,5 @@
-services:
-  econemon_bootsy_base:
-    abstract: true
-    arguments: ['@kernel']
-
-  econemon_bootsy_menu:
-    class: Econemon\Bootsy\ApplicationBundle\Service\MenuManager
-
-  econemon_bootsy_main:
-    class: Econemon\Bootsy\ApplicationBundle\Controller\MainController
-    calls:
-      - [ setTemplateEngine, ["@templating"]]
-
-  econemon_bootsy_config:
-    class: Econemon\Bootsy\ApplicationBundle\Service\ConfigManager
-    parent: econemon_bootsy_base
+imports:
+    - { resource: "services.yml" }
 
 swiftmailer:
   transport: smtp

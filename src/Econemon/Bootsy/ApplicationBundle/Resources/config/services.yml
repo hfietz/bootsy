@@ -1,0 +1,11 @@
+services:
+  econemon_bootsy_base:
+    abstract: true
+    arguments: ['@kernel']
+
+  econemon_bootsy_menu:
+    class: Econemon\Bootsy\ApplicationBundle\Service\MenuManager
+
+  econemon_bootsy_config:
+    class: Econemon\Bootsy\ApplicationBundle\Service\ConfigManager
+    parent: econemon_bootsy_base
