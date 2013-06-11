@@ -35,9 +35,20 @@ class ConfigManager extends BaseService
     return $value;
   }
 
+  public function setValue($name, $value)
+  {
+    $item = new ConfigItem();
+    $item->machineName = $name;
+    $item->value = $value;
+
+    $id = $this->databaseService->merge(ConfigItemMapper::getTableName(), ConfigItemMapper::export($item), array(ConfigItemMapper::getUniqueFieldName()));
+
+    return FALSE !== $id;
+  }
+
   public function load($name = NULL)
   {
-    return $this->databaseService->load(new ConfigItemMapper($name), 'machine_name');
+    return $this->databaseService->load(new ConfigItemMapper($name), ConfigItemMapper::getUniqueFieldName());
   }
 
 }
