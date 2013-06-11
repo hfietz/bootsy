@@ -3,6 +3,7 @@
 namespace Econemon\Bootsy\ApplicationBundle\Model;
 
 use Doctrine\DBAL\Query\QueryBuilder;
+use Econemon\Bootsy\DatabaseBundle\Service\Hydrator;
 use Econemon\Bootsy\DatabaseBundle\Service\ObjectMapper;
 use PDO;
 
@@ -10,9 +11,43 @@ class ConfigItemMapper implements ObjectMapper
 {
   protected $configItemName = NULL;
 
+  const UNIQUE_COLUMN = 'machine_name';
+
+  const TABLE_NAME = 'config_item';
+
   public function __construct($name = NULL)
   {
     $this->configItemName = $name;
+  }
+
+  /**
+   * @return string
+   */
+  public static function getTableName()
+  {
+    return self::TABLE_NAME;
+  }
+
+  /**
+   * @param ConfigItem $item
+   * @return array
+   */
+  public static function export(ConfigItem $item)
+  {
+    return Hydrator::export($item, self::getColumnToPropertyMapping());
+  }
+
+  /**
+   * @return array
+   */
+  public static function getColumnToPropertyMapping()
+  {
+    $mapping = array(
+      'display_text' => 'displayText',
+      'machine_name' => 'machineName',
+      'value' => 'value',
+    );
+    return $mapping;
   }
 
   /**
@@ -24,8 +59,8 @@ class ConfigItemMapper implements ObjectMapper
    */
   public function buildSelectQuery(QueryBuilder $builder)
   {
-    $builder->select('id', 'machine_name', 'display_text', 'value')
-      ->from('config_item', 't')
+    $builder->select('id', self::UNIQUE_COLUMN, 'display_text', 'value')
+      ->from(self::TABLE_NAME, 't')
       ->orderBy('display_text');
 
     if (NULL !== $this->configItemName) {
@@ -43,6 +78,16 @@ class ConfigItemMapper implements ObjectMapper
   public function hydrate($data, array &$result = array(), $keyColumn = 'id')
   {
     $id = $data[$keyColumn];
-    $result[$id] = ConfigItem::fromData($data);
+    $item = new ConfigItem();
+    Hydrator::hydrate($item, $data, self::getColumnToPropertyMapping());
+    $result[$id] = $item;
+  }
+
+  /**
+   * @return string
+   */
+  public static function getUniqueFieldName()
+  {
+    return self::UNIQUE_COLUMN;
   }
 }
