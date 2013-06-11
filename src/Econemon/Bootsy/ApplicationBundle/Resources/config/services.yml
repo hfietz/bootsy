@@ -9,3 +9,7 @@ services:
   econemon_bootsy_config:
     class: Econemon\Bootsy\ApplicationBundle\Service\ConfigManager
     parent: econemon_bootsy_base
+
+  econemon_bootsy_registry:
+    class: Econemon\Bootsy\ApplicationBundle\Service\RegistryService
+    arguments: ['@kernel']
