@@ -6,6 +6,11 @@ services:
   econemon_bootsy_menu:
     class: Econemon\Bootsy\ApplicationBundle\Service\MenuManager
 
+  econemon_bootsy_main:
+    class: Econemon\Bootsy\ApplicationBundle\Controller\MainController
+    calls:
+      - [ setTemplateEngine, ["@templating"]]
+
   econemon_bootsy_menu_controller:
     class: Econemon\Bootsy\ApplicationBundle\Controller\MenuController
     calls:

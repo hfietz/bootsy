@@ -14,6 +14,12 @@ parameters:
     mailer_host: 127.0.0.1 # not yet used
     mailer_user: null # not yet used
     mailer_password: null # not yet used
-    
+
+    bootsy_root_user: rootsy
+    bootsy_root_password: changeThisPassword
+
+    system_email_address: webmaster@localhost
+    system_email_sender: Bootsy
+
     locale: en
     secret: ThisTokenIsNotSoSecretChangeIt
