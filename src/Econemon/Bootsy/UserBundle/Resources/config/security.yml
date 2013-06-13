@@ -7,6 +7,10 @@ security:
     ROLE_SUPER_ADMIN: ROLE_ADMIN
 
   providers:
+    in_memory:
+      memory:
+        users:
+          - { name: "%bootsy_root_user%", password: "%bootsy_root_password%", roles: "ROLE_SUPER_ADMIN" }
     fos_userbundle:
       id: fos_user.user_provider.username
 
@@ -24,3 +28,4 @@ security:
     - { path: ^/register, role: IS_AUTHENTICATED_ANONYMOUSLY }
     - { path: ^/resetting, role: IS_AUTHENTICATED_ANONYMOUSLY }
     - { path: ^/admin/, role: ROLE_ADMIN }
+    - { path: ^/, role: ROLE_USER }
