@@ -6,6 +6,7 @@ use Econemon\Bootsy\ApplicationBundle\Exception\DefensiveCodeException;
 
 class MenuItem
 {
+  const LEVEL_ROOT = 0;
   /**
    * @var string the name of a route, to be used with Twig's path() helper
    */
@@ -24,13 +25,18 @@ class MenuItem
   /**
    * @var int
    */
-  protected $level = 0;
+  protected $level = self::LEVEL_ROOT;
+
+  /**
+   * @var array
+   */
+  protected $roles = array();
 
   /**
    * @param string $label
    * @param string $target
    */
-  public function __construct($label, $target = NULL, $level = 0)
+  public function __construct($label, $target = NULL, $level = self::LEVEL_ROOT)
   {
     if (!is_string($label)) {
       throw DefensiveCodeException::forUnexpectedTypeOf($label, 'string');
@@ -40,6 +46,8 @@ class MenuItem
     }
     $this->target = $target;
     $this->label = $label;
+
+    $this->roles[] = 'ROLE_USER';
   }
 
   /**
@@ -128,5 +136,23 @@ class MenuItem
     }
 
     return $result;
+  }
+
+  public function cloneFlat($level = NULL)
+  {
+    return new MenuItem($this->label, $this->target, NULL === $level ? $this->level : $level);
+  }
+
+  public function asEmptyRoot()
+  {
+    return $this->cloneFlat(self::LEVEL_ROOT);
+  }
+
+  /**
+   * @return array
+   */
+  public function getRoles()
+  {
+    return $this->roles;
   }
 }
