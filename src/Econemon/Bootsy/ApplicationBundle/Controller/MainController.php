@@ -30,25 +30,6 @@ class MainController implements MenuAware
   }
 
   /**
-   * @return MenuItem
-   */
-  protected function initializeMenu()
-  {
-    $menu = $this->menuManager->createMenuItem('System');
-    $menu->addChild('Wall of Shame', 'error_list');
-    $menu->addChild('DB status and config', 'db_status');
-    $menu->addChild('DB versions', 'db_versions');
-
-    $menu = $this->menuManager->createMenuItem('Error pages');
-    $menu->addChild('Not found', 'test_404');
-    $menu->addChild('Server error', 'test_500');
-    $menu->addChild('Unknown error', 'test_error');
-
-    $menuView = $this->menuManager->getMenu();
-    return $menuView;
-  }
-
-  /**
    * @return MainView
    */
   protected function initializeMainView()
@@ -58,7 +39,6 @@ class MainController implements MenuAware
     $view->setPageTitle('Bootsy');
     $view->setClaimHeadline('Bootsy Web Application');
 
-    $view->setMenu($this->initializeMenu());
     return $view;
   }
 

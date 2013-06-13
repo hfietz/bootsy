@@ -28,9 +28,7 @@
     {% endblock %}
     <div id="frame">{% block frame %}
             {% block navigation %}
-                {% if view.menu is defined and view.menu %}
-                    {{ include('EconemonBootsyApplicationBundle:Main:menu.html.twig', { 'menu': view.menu }) }}
-                {% endif %}
+                {{ render(controller('econemon_bootsy_menu_controller:menuAction')) }}
             {% endblock %}
             <div id="content">
                 {% block content %}

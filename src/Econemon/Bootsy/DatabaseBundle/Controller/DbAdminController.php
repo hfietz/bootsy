@@ -1,6 +1,7 @@
 <?php
 namespace Econemon\Bootsy\DatabaseBundle\Controller;
 
+use Econemon\Bootsy\ApplicationBundle\Service\MenuExtender;
 use Exception;
 
 use Econemon\Bootsy\DatabaseBundle\Form\Model\ConfigFormData;
@@ -18,8 +19,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\Yaml\Yaml;
 
-// TODO: secure those methods / routes
-class DbAdminController implements DatabaseServiceAware
+class DbAdminController implements DatabaseServiceAware, MenuExtender
 {
   /**
    * @var DatabaseService
@@ -191,5 +191,15 @@ class DbAdminController implements DatabaseServiceAware
   public function setFormFactory($formFactory)
   {
     $this->formFactory = $formFactory;
+  }
+
+  public function getMenuDescription()
+  {
+    return array(
+      'menu.system._section' => array(
+        'menu.system.db-status' => 'db_status',
+        'menu.system.db-versions' => 'db_versions',
+      ),
+    );
   }
 }

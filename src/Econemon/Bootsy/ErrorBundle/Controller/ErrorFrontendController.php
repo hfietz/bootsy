@@ -2,6 +2,7 @@
 
 namespace Econemon\Bootsy\ErrorBundle\Controller;
 
+use Econemon\Bootsy\ApplicationBundle\Service\MenuExtender;
 use Econemon\Bootsy\ErrorBundle\Model\ErrorView;
 use Econemon\Bootsy\ErrorBundle\Service\ErrorService;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
@@ -10,7 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class ErrorFrontendController
+class ErrorFrontendController implements MenuExtender
 {
   /**
    * @var ErrorService
@@ -77,5 +78,21 @@ class ErrorFrontendController
   public function setErrorService($errorService)
   {
     $this->errorService = $errorService;
+  }
+
+  public function getMenuDescription()
+  {
+    return array(
+      'menu.system._section' => array(
+        'menu.system.errors' => 'error_list',
+      ),
+      'menu.test._section' => array(
+        'menu.test.error-pages._section' => array(
+          'menu.test.error-pages.404' => 'test_404',
+          'menu.test.error-pages.500' => 'test_500',
+          'menu.test.error-pages.general' => 'test_error',
+        ),
+      ),
+    );
   }
 }

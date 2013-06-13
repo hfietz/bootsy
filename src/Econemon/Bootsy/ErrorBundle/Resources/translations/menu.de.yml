@@ -1,0 +1,11 @@
+menu:
+  system:
+    _section: System
+    errors: Fehlerliste
+  test:
+    _section: Testseiten
+    error-pages:
+      _section: Fehlerseiten
+      "404": 404-Not-found-Seite
+      "500": 500-Server-error-Seite
+      general: Seite für unbekannte Fehler

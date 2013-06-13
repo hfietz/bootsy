@@ -1,0 +1,5 @@
+menu:
+  system:
+    _section: System
+    db-status: Datenbank-Status
+    db-versions: Datenbank-Versionen

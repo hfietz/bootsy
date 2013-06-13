@@ -1,0 +1,11 @@
+menu:
+  system:
+    _section: System
+    errors: Error log
+  test:
+    _section: Test pages
+    error-pages:
+      _section: Error pages
+      "404": 404 Not found page
+      "500": 500 Server error page
+      general: Unknown error page

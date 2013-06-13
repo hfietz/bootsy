@@ -2,6 +2,8 @@
 
 namespace Econemon\Bootsy\ApplicationBundle\View;
 
+use Econemon\Bootsy\ApplicationBundle\Exception\DefensiveCodeException;
+
 class MenuItem
 {
   /**
@@ -30,6 +32,12 @@ class MenuItem
    */
   public function __construct($label, $target = NULL, $level = 0)
   {
+    if (!is_string($label)) {
+      throw DefensiveCodeException::forUnexpectedTypeOf($label, 'string');
+    }
+    if (NULL !== $target && !is_string($target)) {
+      throw DefensiveCodeException::forUnexpectedTypeOf($target, 'string');
+    }
     $this->target = $target;
     $this->label = $label;
   }
@@ -93,5 +101,32 @@ class MenuItem
     $this->children[] = $child;
 
     return $child;
+  }
+
+  /**
+   * @param string $label
+   * @return bool
+   */
+  public function hasChildWithLabel($label)
+  {
+    return NULL !== $this->getChildWithLabel($label);
+  }
+
+  /**
+   * @param string $label
+   * @return MenuItem|null
+   */
+  public function getChildWithLabel($label)
+  {
+    $result = NULL;
+
+    foreach ($this->children as $child) {
+      if ($child->getLabel() === $label) {
+        $result = $child;
+        break;
+      }
+    }
+
+    return $result;
   }
 }

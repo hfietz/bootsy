@@ -3,9 +3,9 @@
     <li class="level-{{ item.level }}">
         {% spaceless %}
         {% if item.target %}
-            <a href="{{ path(item.target) }}">{{ item.label }}</a>
+            <a href="{{ path(item.target) }}">{{ item.label|trans({}, 'menu') }}</a>
         {% else %}
-            {{ item.label }}
+            {{ item.label|trans({}, 'menu') }}
         {% endif %}
         {%  if item.children %}
             {{ include('EconemonBootsyApplicationBundle:Main:menu.html.twig', { 'menu': item }) }}
