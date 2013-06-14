@@ -14,8 +14,11 @@ services:
   econemon_bootsy_menu_controller:
     class: Econemon\Bootsy\ApplicationBundle\Controller\MenuController
     calls:
+      - [ setRouter, ["@router"]]
       - [ setTemplateEngine, ["@templating"]]
       - [ setSecurityContext, [ '@security.context' ] ]
+      - [ setAccessMap, [ '@security.access_map' ]]
+      - [ setAccessDecisionManager, [ '@security.access.decision_manager' ]]
 
   econemon_bootsy_config:
     class: Econemon\Bootsy\ApplicationBundle\Service\ConfigManager

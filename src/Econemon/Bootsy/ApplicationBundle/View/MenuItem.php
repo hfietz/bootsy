@@ -28,11 +28,6 @@ class MenuItem
   protected $level = self::LEVEL_ROOT;
 
   /**
-   * @var array
-   */
-  protected $roles = array();
-
-  /**
    * @param string $label
    * @param string $target
    */
@@ -46,8 +41,6 @@ class MenuItem
     }
     $this->target = $target;
     $this->label = $label;
-
-    $this->roles[] = 'ROLE_USER';
   }
 
   /**
@@ -146,13 +139,5 @@ class MenuItem
   public function asEmptyRoot()
   {
     return $this->cloneFlat(self::LEVEL_ROOT);
-  }
-
-  /**
-   * @return array
-   */
-  public function getRoles()
-  {
-    return $this->roles;
   }
 }
