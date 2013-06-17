@@ -1,12 +1,5 @@
-services:
-  econemon_bootsy_user:
-    class: Econemon\Bootsy\UserBundle\Service\UserService
-    parent: econemon_bootsy_base
-  econemon_bootsy_user_profile_form:
-    class: Econemon\Bootsy\UserBundle\Form\ProfileFormType
-    arguments: [ '%fos_user.model.user.class%' ]
-    tags:
-      - { name: form.type, alias: econemon_bootsy_user_profile }
+imports:
+  - { resource: "services.yml" }
 
 fos_user:
   db_driver: orm
