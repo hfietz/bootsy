@@ -7,3 +7,9 @@ services:
     arguments: [ '%fos_user.model.user.class%' ]
     tags:
       - { name: form.type, alias: econemon_bootsy_user_profile }
+  econemon_bootsy_user_fos_user_event_listener:
+    class: Econemon\Bootsy\UserBundle\Event\FOSUserEventListener
+    calls:
+      - [ 'setRouter', ['@router'] ]
+    tags:
+      - { name: kernel.event_subscriber }
