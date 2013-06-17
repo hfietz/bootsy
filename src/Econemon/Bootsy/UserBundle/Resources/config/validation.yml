@@ -1,0 +1,7 @@
+Econemon\Bootsy\UserBundle\Entity\User:
+  properties:
+    name:
+      - MinLength: 3
+      - MaxLength: 255
+    phone:
+      - Regex: '/^\+?[0-9 \/-]+/'

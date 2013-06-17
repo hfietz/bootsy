@@ -1,0 +1,4 @@
+form:
+  user:
+    name: "Voller Name:"
+    phone: "Telefonnummer:"
