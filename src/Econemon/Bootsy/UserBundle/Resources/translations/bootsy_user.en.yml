@@ -1,4 +1,15 @@
+layout:
+  profile:
+    headline: "User %full_name%"
+    save: "Save"
+    section:
+      password: "Password"
+      email: "Email"
+
 form:
   user:
     name: "Full name:"
     phone: "Phone number:"
+    newEmail: "enter a new email address:"
+    submit:
+      newEmail: "Send confirmation request"
