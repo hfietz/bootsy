@@ -150,7 +150,11 @@ class MenuController implements MenuAware
    */
   protected function currentUserHasAccessTo($target)
   {
-    $path = $this->router->generate($target);
+    $route = $this->router->getRouteCollection()->get($target);
+    if (NULL === $route) {
+      return FALSE;
+    }
+    $path = $route->getPath();
     $request = Request::create($path);
     $tuple = $this->accessMap->getPatterns($request);
     $attributes = $tuple[0];
