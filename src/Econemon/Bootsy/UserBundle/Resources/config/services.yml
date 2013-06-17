@@ -13,3 +13,7 @@ services:
       - [ 'setRouter', ['@router'] ]
     tags:
       - { name: kernel.event_subscriber }
+  econemon_bootsy_user_controller:
+    class: Econemon\Bootsy\UserBundle\Controller\UserController
+    calls:
+      - [ 'setHttpKernel', [ '@http_kernel' ] ]

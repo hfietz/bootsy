@@ -1,3 +1,7 @@
+econemon_bootsy_user_profile_edit:
+  path: /profile/edit
+  defaults: { _controller: econemon_bootsy_user_controller:editProfileAction }
+
 fos_user_security:
     resource: "@FOSUserBundle/Resources/config/routing/security.xml"
 
