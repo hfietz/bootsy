@@ -7,10 +7,23 @@
 {% block body %}
     {% block session %}
         <div id="session-status">{% spaceless %}
-        {% if view.session is defined %}
-            {{ render(controller('EconemonBootsySecurityBundle:Session:status')) }}
+        {#
+            TODO (2013-06-17):
+            The code below couples the core bundle to the FOSUserBundle. Find a better way.
+        #}
+        {% if app.security.isGranted('ROLE_SUPER_ADMIN') %}
+           {#
+               TODO (2013-06-17):
+               Config-based "super" admins are represented by a different class internally, and do not have a profile page.
+               To change their setup, use the (still non-existent) system setup page.
+           #}
+           {# <a href="{{ path('econemon_bootsy_system_setup') }}">{{ app.security.token.username }}</a> #}
+            <a href="{{ path('fos_user_security_logout') }}">{{ 'layout.logout'|trans({}, 'FOSUserBundle') }}</a>
+        {% elseif app.security.isGranted('ROLE_USER') %}
+            <a href="{{ path('fos_user_profile_edit') }}">{{ app.security.token.username }}</a>
+            <a href="{{ path('fos_user_security_logout') }}">{{ 'layout.logout'|trans({}, 'FOSUserBundle') }}</a>
         {% else %}
-            <a href="{{ path('fos_user_security_login') }}">Login</a>
+            <a href="{{ path('fos_user_security_login') }}">{{ 'layout.login'|trans({}, 'FOSUserBundle') }}</a>
         {% endif %}
         </div>{% endspaceless %}
     {% endblock %}
