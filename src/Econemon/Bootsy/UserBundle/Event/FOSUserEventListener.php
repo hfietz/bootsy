@@ -29,6 +29,7 @@ class FOSUserEventListener implements EventSubscriberInterface
   {
     return array(
       FOSUserEvents::PROFILE_EDIT_SUCCESS => 'onProfileEditSuccess',
+      FOSUserEvents::CHANGE_PASSWORD_SUCCESS => 'onProfileEditSuccess', // because we change the password on the profile page
     );
   }
 
