@@ -1,0 +1,4 @@
+BEGIN;
+  ALTER TABLE public.app_user ADD COLUMN name VARCHAR(255) NULL;
+  ALTER TABLE public.app_user ADD COLUMN phone VARCHAR(255) NULL;
+COMMIT;
