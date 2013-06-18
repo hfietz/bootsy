@@ -17,4 +17,6 @@ services:
     class: Econemon\Bootsy\UserBundle\Controller\UserController
     parent: econemon_bootsy_base_controller
     calls:
-      - [ 'setHttpKernel', [ '@http_kernel' ] ]
+      - [ 'setUserManager', [ '@fos_user.user_manager' ] ]
+      - [ 'setProfileFormFactory', [ '@fos_user.profile.form.factory' ] ]
+      - [ 'setPasswordFormFactory', [ '@fos_user.change_password.form.factory' ] ]

@@ -10,6 +10,8 @@ form:
   user:
     name: "Voller Name:"
     phone: "Telefonnummer:"
+    current_email: "Aktuelle Email-Adresse:"
     newEmail: "neue Email-Adresse eingeben:"
+    successMessage: "Die Änderungen wurden gespeichert."
     submit:
       newEmail: "Bestätigungsaufforderung schicken"

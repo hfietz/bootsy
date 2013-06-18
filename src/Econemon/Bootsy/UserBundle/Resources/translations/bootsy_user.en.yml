@@ -10,6 +10,8 @@ form:
   user:
     name: "Full name:"
     phone: "Phone number:"
+    current_email: "Current email address:"
     newEmail: "enter a new email address:"
+    successMessage: "The changes have been saved."
     submit:
       newEmail: "Send confirmation request"

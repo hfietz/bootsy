@@ -11,21 +11,11 @@ class ProfileFormType extends BaseForm
 
   public function buildForm(FormBuilderInterface $builder, array $options)
   {
-    parent::buildForm($builder, $options);
-
-    // Stolen from ChangePasswordFormType
-    $builder->add('plainPassword', 'repeated', array(
-      'type' => 'password',
-      'options' => array('translation_domain' => 'FOSUserBundle'),
-      'first_options' => array('label' => 'form.new_password'),
-      'second_options' => array('label' => 'form.new_password_confirmation'),
-      'invalid_message' => 'fos_user.password.mismatch',
-    ));
-
+    $builder->add('username', null, array('label' => 'form.username', 'translation_domain' => 'FOSUserBundle'));
     $builder->add('name', 'text', $this->standard_options('form.user.name'));
     $builder->add('phone', 'text', $this->standard_options('form.user.phone'));
 
-    $field_options = array_merge($this->standard_options('form.user.newEmail'), array('mapped' => false,));
+    $field_options = array_merge($this->standard_options('form.user.newEmail'), array('mapped' => FALSE,));
     $builder->add('newEmail', 'email', $field_options);
   }
 
