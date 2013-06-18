@@ -2,3 +2,4 @@ menu:
   user:
     _section: "Benutzer"
     profile: "Kontoeinstellungen"
+    new: "Benutzer hinzufügen"

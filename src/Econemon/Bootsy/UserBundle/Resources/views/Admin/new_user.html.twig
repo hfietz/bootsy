@@ -1,0 +1,22 @@
+{% extends 'EconemonBootsyApplicationBundle:Main:main.html.twig' %}
+{% trans_default_domain 'bootsy_user' %}
+{% form_theme form 'EconemonBootsyApplicationBundle:Form:theme_default.html.twig' %}
+
+{% block content %}
+    <h2>{{ 'layout.registration.headline'|trans }}</h2>
+    {% for messageType, messages in app.session.flashbag.all() %}
+        {% for message in messages %}
+            <div class="{{ messageType }} message">{{ message }}</div>
+        {% endfor %}
+    {% endfor %}
+    <form action="{{ path('econemon_bootsy_user_new') }}" method="post" {{ form_enctype(form) }}>
+        <div class="form-errors">{{ form_errors(form) }}</div>
+        {{ form_row(form.role) }}
+        {{ form_row(form.email, { 'row_class': 'form_row_top_label' }) }}
+        <p class="explanation">{{ 'layout.registration.explanation'|trans }}</p>
+        <div>
+            <input type="submit" name="submit" value="{{ 'registration.form.submit'|trans }}" />
+        </div>
+        {{ form_rest(form) }}
+    </form>
+{% endblock content %}

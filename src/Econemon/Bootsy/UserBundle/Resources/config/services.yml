@@ -20,3 +20,13 @@ services:
       - [ 'setUserManager', [ '@fos_user.user_manager' ] ]
       - [ 'setProfileFormFactory', [ '@fos_user.profile.form.factory' ] ]
       - [ 'setPasswordFormFactory', [ '@fos_user.change_password.form.factory' ] ]
+      - [ 'setFormFactory', [ '@form.factory' ] ]
+      - [ 'setFosUserMailer', [ '@fos_user.mailer' ] ]
+      - [ 'setTokenGenerator', [ '@fos_user.util.token_generator' ] ]
+
+  econemon_bootsy_user_new_form:
+    class: Econemon\Bootsy\UserBundle\Form\Type\NewUserFormType
+    calls:
+      - [ setTranslator, ["@translator"]]
+    tags:
+      - { name: form.type, alias: econemon_bootsy_user_new_form }

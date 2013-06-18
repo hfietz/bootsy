@@ -5,6 +5,9 @@ layout:
     section:
       password: "Passwort"
       email: "Email"
+  registration:
+    headline: "Neuen Benutzer anlegen"
+    explanation: "An die angegebene Adresse wird ein Link verschickt, der ein einmaliges Anmelden ermöglicht, und den Nutzer zunächst auffordert, ein Passwort zu setzen."
 
 form:
   user:
@@ -15,3 +18,20 @@ form:
     successMessage: "Die Änderungen wurden gespeichert."
     submit:
       newEmail: "Bestätigungsaufforderung schicken"
+
+registration:
+  form:
+    role: "Rolle:"
+    email: "Email-Adresse des neuen Benutzers:"
+    emailConfirm: "zur Bestätigung erneut eingeben:"
+    submit: "Anlegen"
+    messages:
+      emailMismatch: "Die eingegebenen Email-Adressen sind nicht gleich."
+      emailExists: "Ein Benutzer mit der Email-Adresse '%address%' existiert bereits, bitte geben Sie eine andere an."
+      success: "An den neuen Benutzer wurde unter '%address%' ein Bestätigungslink versandt."
+      error: "Ein unerwarteter Fehler ist aufgetreten. Die Meldung lautete: '%message%'."
+
+roles:
+  ROLE_OBSERVER: "Beobachter"
+  ROLE_USER: "Benutzer"
+  ROLE_ADMIN: "Administrator"

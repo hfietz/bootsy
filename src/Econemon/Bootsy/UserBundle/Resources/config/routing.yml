@@ -13,6 +13,18 @@ fos_user_register:
     resource: "@FOSUserBundle/Resources/config/routing/registration.xml"
     prefix: /register
 
+# override the bundle's route with our own, redirecting to what is an admin page in our application
+fos_user_registration_register:
+  path: /register/
+  defaults:
+    _controller: FrameworkBundle:Redirect:redirect
+    route: econemon_bootsy_user_new
+    permanent: true
+
+econemon_bootsy_user_new:
+  path: /admin/user/new
+  defaults: { _controller: econemon_bootsy_user_controller:newUserAction }
+
 fos_user_resetting:
     resource: "@FOSUserBundle/Resources/config/routing/resetting.xml"
     prefix: /resetting

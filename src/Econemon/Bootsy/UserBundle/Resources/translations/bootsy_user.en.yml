@@ -5,6 +5,9 @@ layout:
     section:
       password: "Password"
       email: "Email"
+  registration:
+    headline: "Add a new user"
+    explanation: "A link will be sent to the specified address, allowing a one-time login and asking the user to specify a password first."
 
 form:
   user:
@@ -15,3 +18,20 @@ form:
     successMessage: "The changes have been saved."
     submit:
       newEmail: "Send confirmation request"
+
+registration:
+  form:
+    role: "Role:"
+    email: "Email address of the new user:"
+    emailConfirm: "Enter address again to confirm:"
+    submit: "Create"
+    messages:
+      emailMismatch: "You have entered two different email addresses."
+      emailExists: "There already is a user with the email address '%address%', please specify a different one."
+      success: "A confirmation link has been sent to the new user at '%address%'."
+      error: "An unexpected error occurred. The message was: '%message%'."
+
+roles:
+  ROLE_OBSERVER: "Observer"
+  ROLE_USER: "User"
+  ROLE_ADMIN: "Administrator"
