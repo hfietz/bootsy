@@ -3,6 +3,7 @@
 namespace Econemon\Bootsy\UserBundle\Controller;
 
 use Econemon\Bootsy\ApplicationBundle\Controller\BaseController;
+use Econemon\Bootsy\ApplicationBundle\Service\MenuExtender;
 use Econemon\Bootsy\ApplicationBundle\Service\SecurityContextAware;
 use Econemon\Bootsy\UserBundle\Form\ProfileFormType;
 
@@ -15,7 +16,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\Security\Core\SecurityContextInterface;
 
-class UserController extends BaseController implements SecurityContextAware
+class UserController extends BaseController implements SecurityContextAware, MenuExtender
 {
   /**
    * @var UserManagerInterface
@@ -109,5 +110,14 @@ class UserController extends BaseController implements SecurityContextAware
   {
     // TODO
     $breakpoint = 'here';
+  }
+
+  public function getMenuDescription()
+  {
+    return array(
+      'menu.user._section' => array(
+        'menu.user.profile' => 'econemon_bootsy_user_profile_edit',
+      ),
+    );
   }
 }
