@@ -4,6 +4,7 @@ namespace Econemon\Bootsy\ApplicationBundle\Controller;
 
 use Econemon\Bootsy\ApplicationBundle\Service\MenuAware;
 use Econemon\Bootsy\ApplicationBundle\Service\MenuManager;
+use Econemon\Bootsy\ApplicationBundle\Service\SecurityContextAware;
 use Econemon\Bootsy\ApplicationBundle\View\MenuItem;
 
 use Symfony\Component\HttpFoundation\Request;
@@ -12,7 +13,7 @@ use Symfony\Component\Security\Core\SecurityContextInterface;
 use Symfony\Component\Security\Http\AccessMapInterface;
 use Symfony\Component\Security\Http\FirewallMapInterface;
 
-class MenuController extends BaseController implements MenuAware
+class MenuController extends BaseController implements MenuAware, SecurityContextAware
 {
   /**
    * @var SecurityContextInterface
@@ -52,7 +53,7 @@ class MenuController extends BaseController implements MenuAware
   /**
    * @param \Symfony\Component\Security\Core\SecurityContextInterface $securityContext
    */
-  public function setSecurityContext($securityContext)
+  public function setSecurityContext(SecurityContextInterface $securityContext)
   {
     $this->securityContext = $securityContext;
   }

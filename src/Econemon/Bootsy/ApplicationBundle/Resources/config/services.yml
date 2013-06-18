@@ -21,7 +21,6 @@ services:
     class: Econemon\Bootsy\ApplicationBundle\Controller\MenuController
     parent: econemon_bootsy_base_controller
     calls:
-      - [ setSecurityContext, [ '@security.context' ] ]
       - [ setAccessMap, [ '@security.access_map' ]]
       - [ setAccessDecisionManager, [ '@security.access.decision_manager' ]]
 
