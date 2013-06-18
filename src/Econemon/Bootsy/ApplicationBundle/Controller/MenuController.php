@@ -6,15 +6,13 @@ use Econemon\Bootsy\ApplicationBundle\Service\MenuAware;
 use Econemon\Bootsy\ApplicationBundle\Service\MenuManager;
 use Econemon\Bootsy\ApplicationBundle\View\MenuItem;
 
-use Symfony\Bundle\FrameworkBundle\Routing\Router;
-use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Authorization\AccessDecisionManagerInterface;
 use Symfony\Component\Security\Core\SecurityContextInterface;
 use Symfony\Component\Security\Http\AccessMapInterface;
 use Symfony\Component\Security\Http\FirewallMapInterface;
 
-class MenuController implements MenuAware
+class MenuController extends BaseController implements MenuAware
 {
   /**
    * @var SecurityContextInterface
@@ -25,16 +23,6 @@ class MenuController implements MenuAware
    * @var MenuManager
    */
   protected $menuManager;
-
-  /**
-   * @var EngineInterface
-   */
-  protected $templateEngine;
-
-  /**
-   * @var Router
-   */
-  protected $router;
 
   /**
    * @var AccessMapInterface
@@ -51,14 +39,6 @@ class MenuController implements MenuAware
     $menu = $this->getFilteredMenu();
 
     return $this->templateEngine->renderResponse('EconemonBootsyApplicationBundle:Main:menu.html.twig', array('menu' => $menu));
-  }
-
-  /**
-   * @param \Symfony\Bundle\FrameworkBundle\Templating\EngineInterface $templateEngine
-   */
-  public function setTemplateEngine($templateEngine)
-  {
-    $this->templateEngine = $templateEngine;
   }
 
   /**
@@ -118,14 +98,6 @@ class MenuController implements MenuAware
     }
 
     return $hasGrantedChildren;
-  }
-
-  /**
-   * @param \Symfony\Bundle\FrameworkBundle\Routing\Router $router
-   */
-  public function setRouter($router)
-  {
-    $this->router = $router;
   }
 
   /**

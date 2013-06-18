@@ -7,7 +7,6 @@ services:
 
   econemon_bootsy_database_frontend:
     class: Econemon\Bootsy\DatabaseBundle\Controller\DbAdminController
+    parent: econemon_bootsy_base_controller
     calls:
-      - [ setTemplateEngine, ["@templating"]]
-      - [ setRouter, ["@router"]]
       - [ setFormFactory, ["@form.factory"]]

@@ -2,31 +2,20 @@
 
 namespace Econemon\Bootsy\ErrorBundle\Controller;
 
+use Econemon\Bootsy\ApplicationBundle\Controller\BaseController;
 use Econemon\Bootsy\ApplicationBundle\Service\MenuExtender;
 use Econemon\Bootsy\ErrorBundle\Model\ErrorView;
 use Econemon\Bootsy\ErrorBundle\Service\ErrorService;
-use Symfony\Bundle\FrameworkBundle\Routing\Router;
-use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class ErrorFrontendController implements MenuExtender
+class ErrorFrontendController extends BaseController implements MenuExtender
 {
   /**
    * @var ErrorService
    */
   protected $errorService;
-
-  /**
-   * @var EngineInterface
-   */
-  protected $templateEngine;
-
-  /**
-   * @var Router
-   */
-  protected $router;
 
   public function listAction()
   {
@@ -54,22 +43,6 @@ class ErrorFrontendController implements MenuExtender
         throw new HttpException(501, 'Testing unknown error page');
         break;
     }
-  }
-
-  /**
-   * @param \Symfony\Bundle\FrameworkBundle\Templating\EngineInterface $templateEngine
-   */
-  public function setTemplateEngine($templateEngine)
-  {
-    $this->templateEngine = $templateEngine;
-  }
-
-  /**
-   * @param \Symfony\Bundle\FrameworkBundle\Routing\Router $router
-   */
-  public function setRouter($router)
-  {
-    $this->router = $router;
   }
 
   /**

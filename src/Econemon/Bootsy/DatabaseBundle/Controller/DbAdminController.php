@@ -1,6 +1,7 @@
 <?php
 namespace Econemon\Bootsy\DatabaseBundle\Controller;
 
+use Econemon\Bootsy\ApplicationBundle\Controller\BaseController;
 use Econemon\Bootsy\ApplicationBundle\Service\MenuExtender;
 use Exception;
 
@@ -10,8 +11,6 @@ use Econemon\Bootsy\DatabaseBundle\Model\ScriptView;
 use Econemon\Bootsy\DatabaseBundle\Service\DatabaseService;
 use Econemon\Bootsy\DatabaseBundle\Service\DatabaseServiceAware;
 
-use Symfony\Bundle\FrameworkBundle\Routing\Router;
-use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,22 +18,12 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\Yaml\Yaml;
 
-class DbAdminController implements DatabaseServiceAware, MenuExtender
+class DbAdminController extends BaseController implements DatabaseServiceAware, MenuExtender
 {
   /**
    * @var DatabaseService
    */
   protected $databaseService;
-
-  /**
-   * @var EngineInterface
-   */
-  protected $template_engine;
-
-  /**
-   * @var Router
-   */
-  protected $router;
 
   /**
    * @var FormFactoryInterface
@@ -150,23 +139,15 @@ class DbAdminController implements DatabaseServiceAware, MenuExtender
   }
 
   /**
-   * @param EngineInterface $template_engine
-   */
-  public function setTemplateEngine($template_engine)
-  {
-    $this->template_engine = $template_engine;
-  }
-
-  /**
    * @throws \Exception
    * @return \Symfony\Bundle\FrameworkBundle\Templating\EngineInterface
    */
   public function getTemplateEngine()
   {
-    if (NULL === $this->template_engine) {
+    if (NULL === $this->templateEngine) {
       throw new Exception('Dependency injection failed: No template engine available.');
     }
-    return $this->template_engine;
+    return $this->templateEngine;
   }
 
   /**
@@ -175,14 +156,6 @@ class DbAdminController implements DatabaseServiceAware, MenuExtender
   public function setDatabaseService(DatabaseService $databaseService = NULL)
   {
     $this->databaseService = $databaseService;
-  }
-
-  /**
-   * @param Router $router
-   */
-  public function setRouter($router)
-  {
-    $this->router = $router;
   }
 
   /**

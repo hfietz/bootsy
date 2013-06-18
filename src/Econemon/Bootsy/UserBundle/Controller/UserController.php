@@ -2,11 +2,12 @@
 
 namespace Econemon\Bootsy\UserBundle\Controller;
 
+use Econemon\Bootsy\ApplicationBundle\Controller\BaseController;
 use Symfony\Bundle\FrameworkBundle\HttpKernel;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 
-class UserController
+class UserController extends BaseController
 {
   /**
    * @var HttpKernel

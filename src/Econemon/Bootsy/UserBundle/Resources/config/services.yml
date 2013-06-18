@@ -15,5 +15,6 @@ services:
       - { name: kernel.event_subscriber }
   econemon_bootsy_user_controller:
     class: Econemon\Bootsy\UserBundle\Controller\UserController
+    parent: econemon_bootsy_base_controller
     calls:
       - [ 'setHttpKernel', [ '@http_kernel' ] ]

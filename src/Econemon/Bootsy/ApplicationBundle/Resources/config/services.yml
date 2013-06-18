@@ -3,6 +3,12 @@ services:
     abstract: true
     arguments: ['@kernel']
 
+  econemon_bootsy_base_controller:
+    abstract: true
+    calls:
+      - [ setRouter, ["@router"]]
+      - [ setTemplateEngine, ["@templating"]]
+
   econemon_bootsy_menu:
     class: Econemon\Bootsy\ApplicationBundle\Service\MenuManager
 
@@ -13,9 +19,8 @@ services:
 
   econemon_bootsy_menu_controller:
     class: Econemon\Bootsy\ApplicationBundle\Controller\MenuController
+    parent: econemon_bootsy_base_controller
     calls:
-      - [ setRouter, ["@router"]]
-      - [ setTemplateEngine, ["@templating"]]
       - [ setSecurityContext, [ '@security.context' ] ]
       - [ setAccessMap, [ '@security.access_map' ]]
       - [ setAccessDecisionManager, [ '@security.access.decision_manager' ]]
