@@ -1,6 +1,6 @@
 econemon_bootsy_user_profile_edit:
-  path: /profile/edit
-  defaults: { _controller: econemon_bootsy_user_controller:editProfileAction }
+  path: /profile/edit/{id}
+  defaults: { _controller: econemon_bootsy_user_controller:editProfileAction, id: ~ }
 
 fos_user_security:
     resource: "@FOSUserBundle/Resources/config/routing/security.xml"
@@ -31,6 +31,22 @@ fos_user_registration_confirm:
 econemon_bootsy_user_new:
   path: /admin/user/new
   defaults: { _controller: econemon_bootsy_user_controller:newUserAction }
+
+econemon_bootsy_user_delete:
+  path: /admin/user/{id}/delete
+  defaults: { _controller: econemon_bootsy_user_controller:deleteUserAction }
+
+econemon_bootsy_user_lock:
+  path: /admin/user/{id}/lock
+  defaults: { _controller: econemon_bootsy_user_controller:setUserEnabledAction, enabled: FALSE }
+
+econemon_bootsy_user_unlock:
+  path: /admin/user/{id}/unlock
+  defaults: { _controller: econemon_bootsy_user_controller:setUserEnabledAction, enabled: TRUE }
+
+econemon_bootsy_user_list:
+  path: /admin/users
+  defaults: { _controller: econemon_bootsy_user_controller:listAction }
 
 fos_user_resetting:
     resource: "@FOSUserBundle/Resources/config/routing/resetting.xml"

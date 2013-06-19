@@ -5,7 +5,7 @@
 
 {% block fos_user_content %}
 <h2>{{ 'layout.profile.headline'|trans({ '%full_name%': app.user.name }) }}</h2> {# (this assumes an instance of Econemon\Bootsy\UserBundle\Entity\User #}
-<form action="{{ path('econemon_bootsy_user_profile_edit') }}" {{ form_enctype(form_profile) }} method="POST">
+<form action="{{ path('econemon_bootsy_user_profile_edit', { id: app.user.id }) }}" {{ form_enctype(form_profile) }} method="POST">
     <div class="form-errors">{{ form_errors(form_profile) }}</div>
     {{ form_row(form_profile.username) }}
     {{ form_row(form_profile.name) }}

@@ -106,9 +106,13 @@ class UserController extends BaseController implements SecurityContextAware, Men
     return $this->templateEngine->renderResponse('EconemonBootsyUserBundle:Admin:new_user.html.twig', array('form' => $form->createView()));
   }
 
-  public function editProfileAction(Request $request)
+  public function editProfileAction(Request $request, $id = NULL)
   {
-    $user = $this->securityContext->getToken()->getUser();
+    if (NULL !== $id && $this->securityContext->isGranted('ROLE_ADMIN')) {
+      $user = $this->userManager->findUserBy(array('id' => $id));
+    } else {
+      $user = $this->securityContext->getToken()->getUser();
+    }
 
     $profileForm = $this->profileFormFactory->createForm();
     $profileForm->setData($user);
@@ -134,7 +138,7 @@ class UserController extends BaseController implements SecurityContextAware, Men
           $type = 'error';
         }
         $this->session->getFlashBag()->add($type, $message);
-        return new RedirectResponse($this->router->generate('econemon_bootsy_user_profile_edit'));
+        return new RedirectResponse($this->router->generate('econemon_bootsy_user_profile_edit', array('id' => $user->getId())));
       }
     }
 
@@ -143,6 +147,56 @@ class UserController extends BaseController implements SecurityContextAware, Men
       'form_password' => $passwordForm->createView(),
     );
     return $this->templateEngine->renderResponse('EconemonBootsyUserBundle:Profile:edit.html.twig', $vars);
+  }
+
+  public function listAction()
+  {
+    $users = $this->userManager->findUsers();
+
+    return $this->templateEngine->renderResponse('EconemonBootsyUserBundle:Admin:list.html.twig', array('users' => $users));
+  }
+
+  public function deleteUserAction($id)
+  {
+    try {
+      $this->checkIsOwnAccount($id, 'Can\'t delete your own account');
+
+      $user = $this->userManager->findUserBy(array('id' => $id));
+      if (NULL !== $user) {
+        $this->userManager->deleteUser($user);
+      } else {
+        throw new Exception('There is no user with the id ' . $id);
+      }
+
+      $this->session->getFlashBag()->add('notice', $this->translator->trans('actions.user.delete.success', array('%id%' => $id), self::TRANSLATION_DOMAIN));
+    } catch (Exception $e) {
+      $this->session->getFlashBag()->add('error', $this->translator->trans('actions.user.delete.error', array('%id%' => $id, '%message%' => $e->getMessage()), self::TRANSLATION_DOMAIN));
+    }
+
+    return new RedirectResponse($this->router->generate('econemon_bootsy_user_list'));
+  }
+
+  public function setUserEnabledAction($id, $enabled)
+  {
+    $result = 'actions.user.setEnabled.result.' . ($enabled ? 'unlocked' : 'locked');
+    $result = $this->translator->trans($result, array(), self::TRANSLATION_DOMAIN);
+    try {
+      $this->checkIsOwnAccount($id, 'Can\'t enable / disable your own account');
+
+      $user = $this->userManager->findUserBy(array('id' => $id));
+      if (NULL !== $user) {
+        $user->setEnabled($enabled);
+        $this->userManager->updateUser($user);
+      } else {
+        throw new Exception('There is no user with the id ' . $id);
+      }
+
+      $this->session->getFlashBag()->add('notice', $this->translator->trans('actions.user.setEnabled.success', array('%id%' => $id, '%result%' => $result), self::TRANSLATION_DOMAIN));
+    } catch (Exception $e) {
+      $this->session->getFlashBag()->add('error', $this->translator->trans('actions.user.setEnabled.error', array('%id%' => $id, '%message%' => $e->getMessage(), '%result%' => $result), self::TRANSLATION_DOMAIN));
+    }
+
+    return new RedirectResponse($this->router->generate('econemon_bootsy_user_list'));
   }
 
   /**
@@ -186,6 +240,7 @@ class UserController extends BaseController implements SecurityContextAware, Men
       'menu.user._section' => array(
         'menu.user.profile' => 'econemon_bootsy_user_profile_edit',
         'menu.user.new' => 'econemon_bootsy_user_new',
+        'menu.user.list' => 'econemon_bootsy_user_list',
       ),
     );
   }
@@ -212,5 +267,18 @@ class UserController extends BaseController implements SecurityContextAware, Men
   public function setTokenGenerator($tokenGenerator)
   {
     $this->tokenGenerator = $tokenGenerator;
+  }
+
+  /**
+   * @param $id
+   * @param $errorMessage
+   * @throws \Exception
+   */
+  protected function checkIsOwnAccount($id, $errorMessage)
+  {
+    $executingUser = $this->securityContext->getToken()->getUser();
+    if (is_a($executingUser, 'FOS\UserBundle\Model\UserInterface') && $id == $executingUser->getId()) {
+      throw new Exception($errorMessage);
+    }
   }
 }

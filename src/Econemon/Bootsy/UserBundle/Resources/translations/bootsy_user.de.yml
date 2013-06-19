@@ -1,4 +1,9 @@
 layout:
+  actions:
+    edit: "Bearbeiten"
+    lock: "Sperren"
+    unlock: "Freigeben"
+    delete: "Löschen"
   profile:
     headline: "Benutzer %full_name%"
     save: "Speichern"
@@ -11,6 +16,28 @@ layout:
   resetting:
     headline: "Neues Passwort setzen"
     explanation: "Sie haben Ihr Passwort zurücksetzen lassen oder haben ein neues Konto angelegt und haben daher kein gültiges Passwort. Sie sind gerade mit einem Einmal-Passwort angemeldet und müssen zunächst ein neues Passwort setzen um fortzufahren."
+  userList:
+    headline: "Benutzer"
+    emptyList: "Keine Benutzer gefunden"
+    table:
+      header:
+        id: "#"
+        username: "Nutzer"
+        name: "Name"
+        role: "Rolle"
+        actions: "Aktion"
+
+actions:
+  user:
+    delete:
+      success: "Benutzer #%id% wurde gelöscht."
+      error: "Beim Löschen des Benutzers #%id% ist folgender unerwarteter Fehler aufgetreten: '%message%'."
+    setEnabled:
+      success: "Benutzer #%id% wurde %result%."
+      error: "Benutzer #%id% konnte wegen folgendem unerwarteten Fehler nicht %result% werden: '%message%'."
+      result:
+        locked: "gesperrt"
+        unlocked: "freigegeben"
 
 form:
   user:

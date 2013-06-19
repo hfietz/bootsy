@@ -3,3 +3,4 @@ menu:
     _section: "User"
     profile: "Account settings"
     new: "Add a new user"
+    list: "List of user accounts"

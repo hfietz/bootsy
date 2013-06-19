@@ -1,0 +1,47 @@
+{% extends 'EconemonBootsyApplicationBundle:Main:main.html.twig' %}
+{% trans_default_domain 'bootsy_user' %}
+
+{% block content %}
+    <h2>{{ 'layout.userList.headline'|trans }}</h2>
+    {% for messageType, messages in app.session.flashbag.all() %}
+        {% for message in messages %}
+            <div class="{{ messageType }} message">{{ message }}</div>
+        {% endfor %}
+    {% endfor %}
+    {% if users %}
+        <table>
+            <thead><tr>
+                <th>{{ 'layout.userList.table.header.id'|trans }}</th>
+                <th>{{ 'layout.userList.table.header.username'|trans }}</th>
+                <th>{{ 'layout.userList.table.header.name'|trans }}</th>
+                <th>{{ 'layout.userList.table.header.role'|trans }}</th>
+                <th>{{ 'layout.userList.table.header.actions'|trans }}</th>
+            </tr></thead>
+            <tbody>
+            {% for user in users %}
+                <tr>
+                    <td>{{ user.id }}</td>
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.name }}</td>
+                    <td>{{ ('roles.' ~ user.roles[0])|trans }}</td>
+                    <td>
+                        {% if app.security.isGranted('ROLE_ADMIN') %}
+                            <a href="{{ path('econemon_bootsy_user_profile_edit', { 'id': user.id }) }}" class="action edit">{{ 'layout.actions.edit'|trans }}</a>
+                            {% if not app.user.id is defined or app.user.id != user.id %}
+                                {% if user.enabled %}
+                                <a href="{{ path('econemon_bootsy_user_lock', { 'id': user.id }) }}" class="action lock">{{ 'layout.actions.lock'|trans }}</a>
+                                {% else %}
+                                <a href="{{ path('econemon_bootsy_user_unlock', { 'id': user.id }) }}" class="action unlock">{{ 'layout.actions.unlock'|trans }}</a>
+                                {% endif %}
+                                <a href="{{ path('econemon_bootsy_user_delete', { 'id': user.id }) }}" class="action delete">{{ 'layout.actions.delete'|trans }}</a>
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <em>{{ 'layout.userList.emptyList'|trans }}</em>
+    {% endif %}
+{% endblock content %}

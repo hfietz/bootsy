@@ -1,4 +1,9 @@
 layout:
+  actions:
+    edit: "Edit"
+    lock: "Lock"
+    unlock: "Unlock"
+    delete: "Delete"
   profile:
     headline: "User %full_name%"
     save: "Save"
@@ -11,6 +16,28 @@ layout:
   resetting:
     headline: "Set a new password"
     explanation: "You have requested a password reset or have just activated your account, so you don't have a valid password. You are currently authenticated by a one-time token and have to set a new password before you can continue."
+  userList:
+    headline: "Users"
+    emptyList: "No users found"
+    table:
+      header:
+        id: "#"
+        username: "Username"
+        name: "Full name"
+        role: "Role"
+        actions: "Actions"
+
+actions:
+  user:
+    delete:
+      success: "User #%id% was deleted."
+      error: "Deleting user #%id% failed because of the following unexpected error: '%message%'."
+    setEnabled:
+      success: "User #%id% was %result%."
+      error: "User #%id% could not be %result% due to the following unexpected error: '%message%'."
+      result:
+        locked: "locked"
+        unlocked: "unlocked"
 
 form:
   user:
