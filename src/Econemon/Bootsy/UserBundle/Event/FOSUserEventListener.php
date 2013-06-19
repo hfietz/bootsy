@@ -15,7 +15,7 @@ class FOSUserEventListener implements EventSubscriberInterface
    */
   protected $router;
 
-  public function onProfileEditSuccess(FormEvent $event)
+  public function setRedirectToProfileEdit(FormEvent $event)
   {
     $url = $this->router->generate('fos_user_profile_edit');
 
@@ -28,8 +28,9 @@ class FOSUserEventListener implements EventSubscriberInterface
   public static function getSubscribedEvents()
   {
     return array(
-      FOSUserEvents::PROFILE_EDIT_SUCCESS => 'onProfileEditSuccess',
-      FOSUserEvents::CHANGE_PASSWORD_SUCCESS => 'onProfileEditSuccess', // because we change the password on the profile page
+      FOSUserEvents::PROFILE_EDIT_SUCCESS => 'setRedirectToProfileEdit',
+      FOSUserEvents::CHANGE_PASSWORD_SUCCESS => 'setRedirectToProfileEdit', // because we change the password on the profile page
+      FOSUserEvents::RESETTING_RESET_SUCCESS => 'setRedirectToProfileEdit',
     );
   }
 

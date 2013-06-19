@@ -1,0 +1,10 @@
+{% trans_default_domain 'bootsy_user' %}
+
+<h2>{{ 'layout.resetting.headline'|trans }}</h2>
+<form action="{{ path('fos_user_resetting_reset', {'token': token}) }}" {{ form_enctype(form) }} method="POST" class="fos_user_resetting_reset">
+    <p class="explanation">{{ 'layout.resetting.explanation'|trans }}</p>
+    {{ form_widget(form) }}
+    <div>
+        <input type="submit" value="{{ 'resetting.reset.submit'|trans({}, 'FOSUserBundle') }}" />
+    </div>
+</form>

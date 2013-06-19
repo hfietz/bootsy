@@ -8,6 +8,9 @@ layout:
   registration:
     headline: "Add a new user"
     explanation: "A link will be sent to the specified address, allowing a one-time login and asking the user to specify a password first."
+  resetting:
+    headline: "Set a new password"
+    explanation: "You have requested a password reset or have just activated your account, so you don't have a valid password. You are currently authenticated by a one-time token and have to set a new password before you can continue."
 
 form:
   user:

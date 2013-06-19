@@ -21,6 +21,13 @@ fos_user_registration_register:
     route: econemon_bootsy_user_new
     permanent: true
 
+# override the bundle's route to point to the same page as a password reset (because the way we set this up it works the same)
+fos_user_registration_confirm:
+  path: /register/confirm/{token}
+  defaults:
+    _controller: FOSUserBundle:Resetting:reset
+    methods: [ GET, POST ]
+
 econemon_bootsy_user_new:
   path: /admin/user/new
   defaults: { _controller: econemon_bootsy_user_controller:newUserAction }

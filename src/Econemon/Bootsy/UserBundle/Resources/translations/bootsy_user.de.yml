@@ -8,6 +8,9 @@ layout:
   registration:
     headline: "Neuen Benutzer anlegen"
     explanation: "An die angegebene Adresse wird ein Link verschickt, der ein einmaliges Anmelden ermöglicht, und den Nutzer zunächst auffordert, ein Passwort zu setzen."
+  resetting:
+    headline: "Neues Passwort setzen"
+    explanation: "Sie haben Ihr Passwort zurücksetzen lassen oder haben ein neues Konto angelegt und haben daher kein gültiges Passwort. Sie sind gerade mit einem Einmal-Passwort angemeldet und müssen zunächst ein neues Passwort setzen um fortzufahren."
 
 form:
   user:

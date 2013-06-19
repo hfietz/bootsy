@@ -75,11 +75,16 @@ class UserController extends BaseController implements SecurityContextAware, Men
             $user = $this->userManager->createUser();
 
             $user->setEmail($data->email);
-            $user->setUsername(substr($data->email, 0, strpos($data->email, '@')));
-            $user->setPlainPassword($this->tokenGenerator->generateToken());
             $user->setRoles(array($data->role));
             $user->setEnabled(FALSE);
             $user->setConfirmationToken($this->tokenGenerator->generateToken());
+
+            // username and password may not be NULL, so we enter something reasonable. The password has to be reset by the user anyway.
+            $user->setUsername(substr($data->email, 0, strpos($data->email, '@')));
+            $user->setPlainPassword($this->tokenGenerator->generateToken());
+
+            // Because the confirmation link sent to the user will lead to the (modified) password reset page, we need to note this down as a password reset request
+            $user->setPasswordRequestedAt(new \DateTime());
 
             $this->userManager->updateUser($user);
 
