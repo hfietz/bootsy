@@ -1,3 +1,9 @@
+default:
+  path: /
+  defaults:
+    path: /profile/edit
+    permanent: true
+    _controller: FrameworkBundle:Redirect:urlRedirect
 user:
   resource: "@EconemonBootsyUserBundle/Resources/config/routing.yml"
 

@@ -140,6 +140,9 @@ class UserController extends FormController implements SecurityContextAware, Men
     if ($isValidTarget) {
       $operationAllowed =  $this->securityContext->isGranted('ROLE_ADMIN') || $targetUser->hasSameIdentity($executingUser);
     } else {
+      if ($this->securityContext->isGranted('ROLE_SUPER_ADMIN')) {
+        return new RedirectResponse($this->router->generate('econemon_bootsy_user_list'));
+      }
       $operationAllowed = FALSE; // for clarity and completeness during future changes, not strictly necessary while we throw below
       $params = array('typedesc' => DefensiveCodeException::describeTypeOf($targetUser));
       $baseMessage = 'The user is not a valid target for this operation (it\'s a %typedesc%)';
