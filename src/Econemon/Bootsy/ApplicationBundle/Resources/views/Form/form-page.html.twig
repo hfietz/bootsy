@@ -1,0 +1,18 @@
+{% extends 'EconemonBootsyApplicationBundle:Main:main.html.twig' %}
+            {% block contentBox %}<div id="content">
+                {% block formArea %}<form class="button-row-parent" action="{% block formAction %}{% endblock formAction %}" method="{% block formMethod %}POST{% endblock formMethod %}" {{ form_enctype(form) }}>
+                    {% form_theme form 'EconemonBootsyApplicationBundle:Form:theme_default.html.twig' %}
+                    {% block headingBox %}<h2>{% block heading %}{% endblock heading %}</h2>{% endblock headingBox %}
+                    {% block flashes %}
+                        {% for messageType, messages in app.session.flashbag.all() %}
+                            {% for message in messages %}
+                                <div class="{{ messageType }} message">{{ message }}</div>
+                            {% endfor %}
+                        {% endfor %}
+                    {% endblock flashes %}
+                    {% block formRows %}{% endblock formRows %}
+                    {% block formDescriptionBox %}<p>{{ block('formDescription') }}</p>{% endblock formDescriptionBox %}
+                    {% block formActions %}<input class="primary button bottom right" type="submit" value="{% block submitButtonText %}OK{% endblock submitButtonText %}" />{% endblock formActions %}
+                    {{ form_rest(form) }}
+                    </form>{% endblock formArea %}
+            {% block content %}{% endblock content %}</div>{% endblock contentBox %}

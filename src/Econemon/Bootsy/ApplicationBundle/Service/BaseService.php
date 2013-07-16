@@ -4,11 +4,11 @@ namespace Econemon\Bootsy\ApplicationBundle\Service;
 
 use Econemon\Bootsy\DatabaseBundle\Service\DatabaseService;
 use Econemon\Bootsy\DatabaseBundle\Service\DatabaseServiceAware;
-use Econemon\Bootsy\DatabaseBundle\Service\DatabaseUpdateProvider;
+use Econemon\Bootsy\DatabaseBundle\Service\DatabaseExtender;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpKernel\KernelInterface;
 
-abstract class BaseService implements DatabaseUpdateProvider, DatabaseServiceAware
+abstract class BaseService implements DatabaseExtender, DatabaseServiceAware
 {
   /**
    * @var KernelInterface

@@ -2,11 +2,18 @@
 
 namespace Econemon\Bootsy\ApplicationBundle\Form;
 
+use DateTime;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Translation\TranslatorInterface;
 
 abstract class BaseForm extends AbstractType
 {
+  /**
+   * @var TranslatorInterface
+   */
+  protected $translator;
+
   /**
    * @param FormBuilderInterface $builder
    * @param array $fields
@@ -34,6 +41,14 @@ abstract class BaseForm extends AbstractType
     return ucfirst(strtolower(str_replace('_', '', $name)));
   }
 
+  /**
+   * @param \Symfony\Component\Translation\TranslatorInterface $translator
+   */
+  public function setTranslator($translator)
+  {
+    $this->translator = $translator;
+  }
+
   protected function addSelect(FormBuilderInterface $builder, $name, $label, $choices, $translationDomain, $extraOptions = array())
   {
     $standardOptions = array(
@@ -46,6 +61,41 @@ abstract class BaseForm extends AbstractType
     );
     $options = array_merge($standardOptions, $extraOptions);
     $builder->add($name, 'choice', $options);
+  }
+
+  /**
+   * @param FormBuilderInterface $builder
+   * @param string $name
+   * @param string $label
+   * @param DateTime|null $default the default date to render, NULL means current date, FALSE means no default value
+   * @param string $translationDomain
+   * @param array $extraOptions
+   */
+  protected function addDateField(FormBuilderInterface $builder, $name, $label, $default = NULL, $translationDomain, $extraOptions = array())
+  {
+    $format = 'y-M-d';
+
+    if (NULL === $default) {
+      $default = new DateTime();
+    }
+
+    if (is_a($default, 'DateTime')) {
+      $empty_value = $default->format($format);
+    } else {
+      $empty_value = '';
+    }
+
+    $standardOptions = array(
+      'label' => $label,
+      'translation_domain' => $translationDomain,
+      'widget' => 'single_text',
+      'format' => $format,
+      'empty_value' => $empty_value,
+      'attr' => array('class' => 'date-field'),
+    );
+    $options = array_merge($standardOptions, $extraOptions);
+
+    $builder->add($name, 'date', $options);
   }
 
   /**

@@ -46,6 +46,7 @@ form:
     current_email: "Aktuelle Email-Adresse:"
     newEmail: "neue Email-Adresse eingeben:"
     successMessage: "Die Änderungen wurden gespeichert."
+    unexpectedErrorMessage: "Ein unerwarteter Fehler ist aufgetreten, die Nachricht lautete: '%error%'"
     submit:
       newEmail: "Bestätigungsaufforderung schicken"
 
@@ -60,6 +61,12 @@ registration:
       emailExists: "Ein Benutzer mit der Email-Adresse '%address%' existiert bereits, bitte geben Sie eine andere an."
       success: "An den neuen Benutzer wurde unter '%address%' ein Bestätigungslink versandt."
       error: "Ein unerwarteter Fehler ist aufgetreten. Die Meldung lautete: '%message%'."
+
+email:
+  change_email_confirmation:
+    subject: "Bestätigen Sie Ihre neue Email-Adresse"
+    greeting: "Hallo %name%,"
+    html: "wenn Sie diese Email-Adresse künftig für Ihr Benutzerkonto verwenden wollen, bestätigen Sie dies bitte durch Klick auf folgenden Link: <a href=\"%confirmationUrl%\">%confirmationUrl%</a>"
 
 roles:
   ROLE_OBSERVER: "Beobachter"

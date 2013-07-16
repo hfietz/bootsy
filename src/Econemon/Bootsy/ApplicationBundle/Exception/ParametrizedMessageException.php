@@ -8,12 +8,12 @@ class ParametrizedMessageException extends Exception
 {
   protected $parameters = array();
 
-  const DEFAULT_BASE_MESSAGE = 'An error has occurred: \'%message%\'';
+  const BASE_MSG_DEFAULT = 'An error has occurred: \'%message%\'';
 
   public function __construct($message = "", $code = 0, Exception $previous = null, $baseMessage = NULL)
   {
     if (NULL === $baseMessage) {
-      $baseMessage = static::DEFAULT_BASE_MESSAGE;
+      $baseMessage = static::BASE_MSG_DEFAULT;
     }
     parent::__construct($baseMessage, $code, $previous);
     $this->setParameter('message', $message);

@@ -4,8 +4,8 @@
 {% form_theme form_password 'EconemonBootsyApplicationBundle:Form:theme_default.html.twig' %}
 
 {% block fos_user_content %}
-<h2>{{ 'layout.profile.headline'|trans({ '%full_name%': app.user.name }) }}</h2> {# (this assumes an instance of Econemon\Bootsy\UserBundle\Entity\User #}
-<form action="{{ path('econemon_bootsy_user_profile_edit', { id: app.user.id }) }}" {{ form_enctype(form_profile) }} method="POST">
+<h2>{{ 'layout.profile.headline'|trans({ '%full_name%': user.displayName }) }}</h2> {# (this assumes an instance of Econemon\Bootsy\UserBundle\Entity\User #}
+<form action="{{ path('econemon_bootsy_user_profile_edit', { id: user.id }) }}" {{ form_enctype(form_profile) }} method="POST">
     <div class="form-errors">{{ form_errors(form_profile) }}</div>
     {{ form_row(form_profile.username) }}
     {{ form_row(form_profile.name) }}
@@ -19,7 +19,7 @@
             <dt>{{ 'form.user.current_email'|trans }}</dt>
             <dd>{{ app.user.email }}</dd>
         </dl>
-        {{ form_row(form_profile.newEmail, { 'row_class': 'form_row_top_label' }) }}
+        {{ form_row(form_profile.newEmail, { 'row_class': 'form-row-top-label' }) }}
         <div>
             <input type="submit" name="submit-email" value="{{ 'form.user.submit.newEmail'|trans }}" />
         </div>
@@ -30,8 +30,8 @@
     <div class="form-errors">{{ form_errors(form_password) }}</div>
     <fieldset>
         <legend>{{ 'layout.profile.section.password'|trans }}</legend>
-        {{ form_row(form_password.current_password, { 'row_class': 'form_row_top_label' }) }}
-        {{ form_row(form_password.plainPassword, { 'row_class': 'form_row_top_label' }) }}
+        {{ form_row(form_password.current_password, { 'row_class': 'form-row-top-label' }) }}
+        {{ form_row(form_password.plainPassword, { 'row_class': 'form-row-top-label' }) }}
         <div>
             <input type="submit" name="submit-password" value="{{ 'change_password.submit'|trans({}, 'FOSUserBundle') }}" />
         </div>

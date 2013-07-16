@@ -7,12 +7,14 @@ services:
     arguments: [ '%fos_user.model.user.class%' ]
     tags:
       - { name: form.type, alias: econemon_bootsy_user_profile }
+
   econemon_bootsy_user_fos_user_event_listener:
     class: Econemon\Bootsy\UserBundle\Event\FOSUserEventListener
     calls:
       - [ 'setRouter', ['@router'] ]
     tags:
       - { name: kernel.event_subscriber }
+
   econemon_bootsy_user_controller:
     class: Econemon\Bootsy\UserBundle\Controller\UserController
     parent: econemon_bootsy_base_controller
@@ -22,11 +24,11 @@ services:
       - [ 'setPasswordFormFactory', [ '@fos_user.change_password.form.factory' ] ]
       - [ 'setFormFactory', [ '@form.factory' ] ]
       - [ 'setFosUserMailer', [ '@fos_user.mailer' ] ]
+      - [ 'setBootsyMailer', [ '@econemon_bootsy_mailer' ] ]
       - [ 'setTokenGenerator', [ '@fos_user.util.token_generator' ] ]
 
   econemon_bootsy_user_new_form:
     class: Econemon\Bootsy\UserBundle\Form\Type\NewUserFormType
-    calls:
-      - [ setTranslator, ["@translator"]]
+    parent: econemon_bootsy_base_form
     tags:
       - { name: form.type, alias: econemon_bootsy_user_new_form }

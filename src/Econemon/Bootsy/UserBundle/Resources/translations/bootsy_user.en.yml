@@ -46,6 +46,7 @@ form:
     current_email: "Current email address:"
     newEmail: "enter a new email address:"
     successMessage: "The changes have been saved."
+    unexpectedErrorMessage: "An unexpected error has occurred, the messsage was: '%error%'"
     submit:
       newEmail: "Send confirmation request"
 
@@ -60,6 +61,12 @@ registration:
       emailExists: "There already is a user with the email address '%address%', please specify a different one."
       success: "A confirmation link has been sent to the new user at '%address%'."
       error: "An unexpected error occurred. The message was: '%message%'."
+
+email:
+  change_email_confirmation:
+    subject: "Confirm your new email address"
+    greeting: "Hello %name%,"
+    html: "please confirm that you want to use this email address by clicking on the following link: <a href=\"%confirmationUrl%\">%confirmationUrl%</a>"
 
 roles:
   ROLE_OBSERVER: "Observer"

@@ -1,7 +1,18 @@
 {% block form_row %}
-    <div class="{{ row_class|default('form_row') }}">
+    <div class="{{ row_class|default('form-row') }}">
         {{ form_label(form) }}
         {{ form_errors(form) }}
         {{ form_widget(form) }}
     </div>
 {% endblock %}
+
+{% block fieldset_widget %}
+    <fieldset class="button-row-parent" name="{{ name }}">
+        <legend>{{ legend }}</legend>
+        {% for field in form %}
+        {{ form_row(field) }}
+        {% endfor %}
+        {% set defaultButtonText = 'form.buttons.save' | trans({}, 'bootsy') %}
+        <input class="primary button bottom right" type="submit" value="{{ submitButtonText|default(defaultButtonText) }}" />
+    </fieldset>
+{% endblock fieldset_widget %}

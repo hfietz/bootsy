@@ -17,10 +17,6 @@ class NewUserFormType extends BaseForm
 
   const DEFAULT_ROLE_NAME = 'ROLE_USER';
 
-  /**
-   * @var TranslatorInterface
-   */
-  protected $translator;
 
   public function buildForm(FormBuilderInterface $builder, array $options)
   {
@@ -69,13 +65,5 @@ class NewUserFormType extends BaseForm
   public function getDefaultRoleOption()
   {
     return self::DEFAULT_ROLE_NAME;
-  }
-
-  /**
-   * @param \Symfony\Component\Translation\TranslatorInterface $translator
-   */
-  public function setTranslator($translator)
-  {
-    $this->translator = $translator;
   }
 }

@@ -1,10 +1,5 @@
 {% extends 'EconemonBootsyApplicationBundle:Main:main.html.twig' %}
 {% block content %}
-{% for messageType, messages in app.session.flashbag.all() %}
-    {% for message in messages %}
-    <div class="{{ messageType }} message">{{ message }}</div>
-    {% endfor %}
-{% endfor %}
 {% block fos_user_content %}
 {% endblock fos_user_content %}
 {% endblock content %}

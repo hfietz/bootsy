@@ -27,6 +27,20 @@ class User extends BaseUser
   protected $phone;
 
   /**
+   * @param mixed $object
+   * @return bool
+   */
+  public static function isSameClass($object)
+  {
+    return is_a($object, __CLASS__);
+  }
+
+  public function getDisplayName()
+  {
+    return NULL === $this->getName() ? $this->getUsername() : $this->getName();
+  }
+
+  /**
    * @return string
    */
   public function getName()
@@ -56,5 +70,22 @@ class User extends BaseUser
   public function setPhone($phone)
   {
     $this->phone = $phone;
+  }
+
+  /**
+   * @param mixed $other
+   * @return bool
+   */
+  public function hasSameIdentity($other)
+  {
+    return is_a($other, get_class($this)) && $this->hasIdentity() && $this->getId() === $other->getId();
+  }
+
+  /**
+   * @return bool
+   */
+  public function hasIdentity()
+  {
+    return NULL !== $this->getId();
   }
 }

@@ -1,13 +1,8 @@
 {% extends 'EconemonBootsyApplicationBundle:Main:main.html.twig' %}
 {% trans_default_domain 'bootsy_user' %}
 
+{% block heading %}{{ 'layout.userList.headline'|trans }}{% endblock heading %}
 {% block content %}
-    <h2>{{ 'layout.userList.headline'|trans }}</h2>
-    {% for messageType, messages in app.session.flashbag.all() %}
-        {% for message in messages %}
-            <div class="{{ messageType }} message">{{ message }}</div>
-        {% endfor %}
-    {% endfor %}
     {% if users %}
         <table>
             <thead><tr>

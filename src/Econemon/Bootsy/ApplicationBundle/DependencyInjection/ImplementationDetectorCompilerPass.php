@@ -2,6 +2,7 @@
 
 namespace Econemon\Bootsy\ApplicationBundle\DependencyInjection;
 
+use Econemon\Bootsy\ApplicationBundle\Exception\DefensiveCodeException;
 use Exception;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -35,14 +36,17 @@ class ImplementationDetectorCompilerPass implements CompilerPassInterface
   {
     foreach ($container->getDefinitions() as $serviceId => $definition) {
       foreach ($this->consumers as $consumer) {
-        $id = $consumer->getServiceId();
-        if ($container->hasDefinition($id) && is_subclass_of($definition->getClass(), $consumer->getInterfaceName())) {
-          $container->findDefinition($id)->addMethodCall($consumer->getRegistrationMethod(), array(new Reference($serviceId)));
+        $isProvider = is_subclass_of($definition->getClass(), $consumer->getInterfaceName());
+        $consumerExists = $container->hasDefinition($consumer->getServiceId());
+        if ($consumerExists && $isProvider) {
+          $container->findDefinition($consumer->getServiceId())->addMethodCall($consumer->getRegistrationMethod(), array(new Reference($serviceId)));
         }
       }
 
       foreach ($this->providers as $provider) {
-        if (is_subclass_of($definition->getClass(), $provider->getInterfaceName())) {
+        $isClient = is_subclass_of($definition->getClass(), $provider->getInterfaceName());
+        $providerExists = $container->hasDefinition($provider->getServiceId());
+        if ($isClient && $providerExists) {
           $definition->addMethodCall($provider->getRegistrationMethod(), array(new Reference($provider->getServiceId())));
         }
       }
@@ -93,7 +97,7 @@ class ImplementationDetectorCompilerPass implements CompilerPassInterface
         $this->providers[] = $desc;
         break;
       default:
-        throw new Exception("A programming error occured: Invalid type for service interface description.");
+        throw new DefensiveCodeException("Invalid type for service interface description.");
     }
   }
 }

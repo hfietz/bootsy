@@ -17,11 +17,11 @@ class EconemonBootsyDatabaseBundle extends Bundle
     $pass
       ->service(DatabaseService::SERVICE_ID)
       ->catersFor(DatabaseService::CLIENT_INTERFACE_NAME)
-      ->via(DatabaseService::SETTER_NAME);
+      ->via(DatabaseService::SET_DATABASE_SERVICE);
 
     $pass
       ->service(DatabaseService::SERVICE_ID)
-      ->consumes(DatabaseService::PROVIDER_INTERFACE_NAME)
+      ->consumes(DatabaseService::EXTENDER_INTERFACE_NAME)
       ->via(DatabaseService::REGISTRATION_CALLBACK);
 
     $container->addCompilerPass($pass);

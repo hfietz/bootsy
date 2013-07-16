@@ -2,12 +2,15 @@
 
 namespace Econemon\Bootsy\ApplicationBundle\Controller;
 
+use Econemon\Bootsy\ApplicationBundle\Service\SecurityContextAware;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Security\Core\SecurityContextInterface;
 use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Component\Validator\Validator;
 
-abstract class BaseController
+abstract class BaseController implements SecurityContextAware
 {
   /**
    * @var RouterInterface
@@ -28,6 +31,17 @@ abstract class BaseController
    * @var TranslatorInterface
    */
   protected $translator;
+
+  /**
+   * @var Validator
+   */
+  protected $validator;
+
+  /**
+   * @var SecurityContextInterface $securityContext
+   */
+
+  protected $securityContext;
 
   /**
    * @param \Symfony\Component\Routing\RouterInterface $router
@@ -59,5 +73,36 @@ abstract class BaseController
   public function setTranslator($translator)
   {
     $this->translator = $translator;
+  }
+
+  /**
+   * @param \Symfony\Component\Validator\Validator $validator
+   */
+  public function setValidator($validator)
+  {
+    $this->validator = $validator;
+  }
+
+  /**
+   * @param SecurityContextInterface $securityContext
+   */
+  public function setSecurityContext(SecurityContextInterface $securityContext)
+  {
+    $this->securityContext = $securityContext;
+  }
+
+  /**
+   * @return int|null
+   */
+  protected function getCurrentUserId()
+  {
+    $user = $this->securityContext->getToken()->getUser();
+    if (is_a($user, 'Econemon\Bootsy\UserBundle\Entity\User')) {
+      $userId = $user->getId();
+    } else {
+      $userId = NULL;
+    }
+
+    return $userId;
   }
 }

@@ -42,12 +42,19 @@
     <div id="frame">{% block frame %}
             {% block navigation %}
                 {{ render(controller('econemon_bootsy_menu_controller:menuAction')) }}
-            {% endblock %}
-            <div id="content">
-                {% block content %}
-                {% endblock %}
-            </div>
-        {% endblock %}</div>
+            {% endblock navigation %}
+            {% block contentBox %}<div id="content">
+                {% block headingBox %}<h2>{% block heading %}{% endblock heading %}</h2>{% endblock headingBox %}
+                {% block flashes %}
+                    {% for messageType, messages in app.session.flashbag.all() %}
+                        {% for message in messages %}
+                            <div class="{{ messageType }} message">{{ message }}</div>
+                        {% endfor %}
+                    {% endfor %}
+                {% endblock flashes %}
+                {% block content %}{% endblock content %}
+            </div>{% endblock contentBox %}
+        {% endblock frame %}</div>
     <div id="footer">
         {% block footer %}{% endblock %}
     </div>

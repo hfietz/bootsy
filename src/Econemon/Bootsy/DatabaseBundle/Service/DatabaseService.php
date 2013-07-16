@@ -2,6 +2,7 @@
 
 namespace Econemon\Bootsy\DatabaseBundle\Service;
 
+use Econemon\Bootsy\ApplicationBundle\Service\DoctrineAware;
 use Exception;
 use Econemon\Bootsy\DatabaseBundle\Exception\DatabaseException;
 use Econemon\Bootsy\DatabaseBundle\Model\DatabaseConfiguration;
@@ -17,17 +18,18 @@ use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Types\Type;
 
 use PDO;
+use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Yaml\Yaml;
 
-class DatabaseService
+class DatabaseService implements DoctrineAware
 {
   const CLIENT_INTERFACE_NAME = 'Econemon\Bootsy\DatabaseBundle\Service\DatabaseServiceAware';
-  const PROVIDER_INTERFACE_NAME = 'Econemon\Bootsy\DatabaseBundle\Service\DatabaseUpdateProvider';
-  const SETTER_NAME = 'setDatabaseService';
+  const EXTENDER_INTERFACE_NAME = 'Econemon\Bootsy\DatabaseBundle\Service\DatabaseExtender';
+  const SET_DATABASE_SERVICE = 'setDatabaseService';
   const SERVICE_ID = 'econemon_bootsy_database';
   const REGISTRATION_CALLBACK = 'registerSchemaProviderService';
 
@@ -58,7 +60,12 @@ class DatabaseService
   protected $kernel;
 
   /**
-   * @param DatabaseUpdateProvider $service
+   * @var RegistryInterface
+   */
+  public $doctrine;
+
+  /**
+   * @param DatabaseExtender $service
    */
   public function registerSchemaProviderService($service)
   {
@@ -371,6 +378,21 @@ class DatabaseService
     return $id;
   }
 
+  public function startTransaction()
+  {
+    $this->db_connection->beginTransaction();
+  }
+
+  public function commitTransaction()
+  {
+    $this->db_connection->commit();
+  }
+
+  public function rollbackTransaction()
+  {
+    $this->db_connection->rollBack();
+  }
+
   protected function unsafeMerge($tableName, $data, $idField, $searchFields, $withUpdate = TRUE)
   {
     $id = $this->unsafeSelectId($tableName, $searchFields, $idField);
@@ -498,13 +520,13 @@ class DatabaseService
    */
   public function inTransaction($fn)
   {
-    $this->db_connection->beginTransaction();
+    $this->startTransaction();
     try {
       $params = array_slice(func_get_args(), 1);
       $value = call_user_func_array($fn, $params);
-      $this->db_connection->commit();
+      $this->commitTransaction();
     } catch (Exception $e) {
-      $this->db_connection->rollBack();
+      $this->rollbackTransaction();
       throw $e;
     }
     return $value;
@@ -584,5 +606,18 @@ class DatabaseService
 
     $success = $stmt->execute();
     return $success;
+  }
+
+  public function setDoctrine(RegistryInterface $doctrine)
+  {
+    $this->doctrine = $doctrine;
+  }
+
+  /**
+   * @return \Symfony\Bridge\Doctrine\RegistryInterface
+   */
+  public function getDoctrine()
+  {
+    return $this->doctrine;
   }
 }

@@ -10,14 +10,26 @@ services:
       - [ setTemplateEngine, ["@templating"]]
       - [ setSession, ["@session"]]
       - [ setTranslator, ["@translator"]]
+      - [ setValidator, [ "@validator" ] ]
+
+  econemon_bootsy_base_form:
+    abstract: true
+    calls:
+      - [ setTranslator, ["@translator"]]
+
+  econemon_boosty_form_type_fieldset:
+    class: Econemon\Bootsy\ApplicationBundle\Form\FieldsetType
+    tags:
+      - { name: form.type, alias: fieldset }
 
   econemon_bootsy_menu:
     class: Econemon\Bootsy\ApplicationBundle\Service\MenuManager
 
-  econemon_bootsy_main:
-    class: Econemon\Bootsy\ApplicationBundle\Controller\MainController
+  econemon_bootsy_mailer:
+    class: Econemon\Bootsy\ApplicationBundle\Service\TemplateMailer
     calls:
-      - [ setTemplateEngine, ["@templating"]]
+      - [ setSwift, [ "@mailer" ] ]
+      - [ setTwig, [ "@twig" ] ]
 
   econemon_bootsy_menu_controller:
     class: Econemon\Bootsy\ApplicationBundle\Controller\MenuController

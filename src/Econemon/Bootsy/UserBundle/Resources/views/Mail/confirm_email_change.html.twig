@@ -1,0 +1,6 @@
+{% trans_default_domain 'bootsy_user' %}
+
+{% block greeting %}{{ 'email.change_email_confirmation.greeting'|trans({ '%name%': user.name|default(user.username) }) }}{% endblock greeting %}<br/>
+{% block html_body %}<p>
+{{ 'email.change_email_confirmation.html'|trans({ '%confirmationUrl%': confirmationUrl })|raw }}
+</p>{% endblock html_body %}

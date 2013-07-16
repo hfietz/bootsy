@@ -2,28 +2,41 @@
 
 namespace Econemon\Bootsy\UserBundle\Controller;
 
-use Econemon\Bootsy\ApplicationBundle\Controller\BaseController;
+use Econemon\Bootsy\ApplicationBundle\Controller\FormController;
+use Econemon\Bootsy\ApplicationBundle\Exception\DefensiveCodeException;
 use Econemon\Bootsy\ApplicationBundle\Service\MenuExtender;
 use Econemon\Bootsy\ApplicationBundle\Service\SecurityContextAware;
+use Econemon\Bootsy\ApplicationBundle\Service\TemplateMailerInterface;
+use Econemon\Bootsy\DatabaseBundle\Service\DatabaseService;
+use Econemon\Bootsy\DatabaseBundle\Service\DatabaseServiceAware;
+use Econemon\Bootsy\UserBundle\Entity\User;
 use Econemon\Bootsy\UserBundle\Form\Model\NewUserData;
 use Econemon\Bootsy\UserBundle\Form\ProfileFormType;
 
 use Exception;
 use FOS\UserBundle\Form\Factory\FactoryInterface;
 use FOS\UserBundle\Mailer\MailerInterface;
+use FOS\UserBundle\Model\UserInterface;
 use FOS\UserBundle\Model\UserManagerInterface;
 
 use FOS\UserBundle\Util\TokenGeneratorInterface;
-use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\SecurityContextInterface;
+use Symfony\Component\Validator\Constraints\Email;
 
-class UserController extends BaseController implements SecurityContextAware, MenuExtender
+class UserController extends FormController implements SecurityContextAware, MenuExtender, DatabaseServiceAware
 {
   const TRANSLATION_DOMAIN = 'bootsy_user';
+
+  /**
+   * @var DatabaseService
+   */
+  public $databaseService;
+
   /**
    * @var UserManagerInterface
    */
@@ -33,6 +46,11 @@ class UserController extends BaseController implements SecurityContextAware, Men
    * @var MailerInterface
    */
   protected $fosUserMailer;
+
+  /**
+   * @var TemplateMailerInterface
+   */
+  protected $bootsyMailer;
 
   /**
    * @var TokenGeneratorInterface
@@ -48,11 +66,6 @@ class UserController extends BaseController implements SecurityContextAware, Men
    * @var FactoryInterface
    */
   protected $passwordFormFactory;
-
-  /**
-   * @var FormFactoryInterface
-   */
-  protected $formFactory;
 
   /**
    * @var SecurityContextInterface
@@ -71,6 +84,7 @@ class UserController extends BaseController implements SecurityContextAware, Men
       if ($form->isValid()) {
         $existingUser = $this->userManager->findUserByEmail($data->email);
         if (NULL === $existingUser) {
+          $this->databaseService->startTransaction();
           try {
             $user = $this->userManager->createUser();
 
@@ -92,7 +106,10 @@ class UserController extends BaseController implements SecurityContextAware, Men
 
             $message = $this->translator->trans('registration.form.messages.success', array('%address%' => $data->email), self::TRANSLATION_DOMAIN);
             $this->session->getFlashBag()->add('notice', $message);
+
+            $this->databaseService->commitTransaction();
           } catch (Exception $e) {
+            $this->databaseService->rollbackTransaction();
             $message = $this->translator->trans('registration.form.messages.error', array('%message%' => $e->getMessage()), self::TRANSLATION_DOMAIN);
             $this->session->getFlashBag()->add('error', $message);
           }
@@ -108,17 +125,32 @@ class UserController extends BaseController implements SecurityContextAware, Men
 
   public function editProfileAction(Request $request, $id = NULL)
   {
-    if (NULL !== $id && $this->securityContext->isGranted('ROLE_ADMIN')) {
-      $user = $this->userManager->findUserBy(array('id' => $id));
+    /**
+     * @var User $targetUser
+     */
+    if (NULL !== $id) {
+      $targetUser = $this->userManager->findUserBy(array('id' => $id));
     } else {
-      $user = $this->securityContext->getToken()->getUser();
+      $targetUser = $this->securityContext->getToken()->getUser();
+    }
+
+    $executingUser = $this->securityContext->getToken()->getUser();
+    $isValidTarget = User::isSameClass($targetUser);
+
+    if ($isValidTarget) {
+      $operationAllowed =  $this->securityContext->isGranted('ROLE_ADMIN') || $targetUser->hasSameIdentity($executingUser);
+    } else {
+      $operationAllowed = FALSE; // for clarity and completeness during future changes, not strictly necessary while we throw below
+      $params = array('typedesc' => DefensiveCodeException::describeTypeOf($targetUser));
+      $baseMessage = 'The user is not a valid target for this operation (it\'s a %typedesc%)';
+      throw DefensiveCodeException::fromBaseMessage($baseMessage, $params);
     }
 
     $profileForm = $this->profileFormFactory->createForm();
-    $profileForm->setData($user);
+    $profileForm->setData($targetUser);
 
     $passwordForm = $this->passwordFormFactory->createForm();
-    $passwordForm->setData($user);
+    $passwordForm->setData($targetUser);
 
     if ($request->isMethod('POST')) {
       // password form is just generated here, the processing still happens at the original controller in the FOSUserBundle
@@ -126,10 +158,10 @@ class UserController extends BaseController implements SecurityContextAware, Men
       if ($profileForm->isValid()) {
         try {
           $newEmail = $profileForm->get('newEmail');
-          if (!$newEmail->isEmpty() && $newEmail->getData() !== $user->getEmail()) {
-            $this->triggerNewEmailConfiguration($user->getId(), $newEmail->getData());
+          if (!$newEmail->isEmpty() && $newEmail->getData() !== $targetUser->getEmail()) {
+            $this->triggerNewEmailConfiguration($targetUser, $newEmail->getData());
           }
-          $this->userManager->updateUser($user);
+          $this->userManager->updateUser($targetUser);
           $message = $this->translator->trans('form.user.successMessage', array(), self::TRANSLATION_DOMAIN);
           $type = 'notice';
         } catch (Exception $e) {
@@ -138,13 +170,14 @@ class UserController extends BaseController implements SecurityContextAware, Men
           $type = 'error';
         }
         $this->session->getFlashBag()->add($type, $message);
-        return new RedirectResponse($this->router->generate('econemon_bootsy_user_profile_edit', array('id' => $user->getId())));
+        return new RedirectResponse($this->router->generate('econemon_bootsy_user_profile_edit', array('id' => $targetUser->getId())));
       }
     }
 
     $vars = array(
       'form_profile' => $profileForm->createView(),
       'form_password' => $passwordForm->createView(),
+      'user' => $targetUser,
     );
     return $this->templateEngine->renderResponse('EconemonBootsyUserBundle:Profile:edit.html.twig', $vars);
   }
@@ -199,6 +232,34 @@ class UserController extends BaseController implements SecurityContextAware, Men
     return new RedirectResponse($this->router->generate('econemon_bootsy_user_list'));
   }
 
+  public function updateEmailAddressAction($token, $emailAddress)
+  {
+    /**
+     * @var User $targetUser
+     */
+    $targetUser = $this->userManager->findUserByConfirmationToken($token);
+
+    $errors = $this->validator->validateValue($emailAddress, new Email());
+
+    $currentUser = $this->securityContext->getToken()->getUser();
+
+    if (NULL !== $targetUser && $targetUser->hasSameIdentity($currentUser)) {
+      if ($errors->count() > 0) {
+        // TODO
+        $breakpoint = "here";
+      } else {
+        $currentUser->setEmail($emailAddress);
+        $currentUser->setConfirmationToken(NULL);
+        $this->userManager->updateUser($currentUser);
+      }
+    } else {
+      // TODO
+      $breakpoint = "here";
+    }
+
+    return new RedirectResponse($this->router->generate('econemon_bootsy_user_profile_edit'));
+  }
+
   /**
    * @param \FOS\UserBundle\Model\UserManagerInterface $userManager
    */
@@ -228,10 +289,23 @@ class UserController extends BaseController implements SecurityContextAware, Men
     $this->passwordFormFactory = $passwordFormFactory;
   }
 
-  protected function triggerNewEmailConfiguration($id, $newEmail)
+  /**
+   * @param UserInterface $user
+   * @param string $newEmail
+   */
+  protected function triggerNewEmailConfiguration($user, $newEmail)
   {
-    // TODO
-    $breakpoint = 'here';
+    $token = $this->tokenGenerator->generateToken();
+
+    $user->setConfirmationToken($token);
+    $this->userManager->updateUser($user);
+
+    $url = $this->router->generate('econemon_bootsy_user_update_email', array('token' => $token, 'emailAddress' => $newEmail), UrlGeneratorInterface::ABSOLUTE_URL);
+
+    $params = array('user' => $user, 'confirmationUrl' => $url);
+    $subject = $this->translator->trans('email.change_email_confirmation.subject', array(), self::TRANSLATION_DOMAIN);
+    $template = 'EconemonBootsyUserBundle:Mail:confirm_email_change.html.twig';
+    $this->bootsyMailer->sendTemplateAsMail($template, $params, $subject, $newEmail, 'tbd@example.com');
   }
 
   public function getMenuDescription()
@@ -245,13 +319,6 @@ class UserController extends BaseController implements SecurityContextAware, Men
     );
   }
 
-  /**
-   * @param \Symfony\Component\Form\FormFactoryInterface $formFactory
-   */
-  public function setFormFactory($formFactory)
-  {
-    $this->formFactory = $formFactory;
-  }
 
   /**
    * @param \FOS\UserBundle\Mailer\MailerInterface $fosUserMailer
@@ -280,5 +347,21 @@ class UserController extends BaseController implements SecurityContextAware, Men
     if (is_a($executingUser, 'FOS\UserBundle\Model\UserInterface') && $id == $executingUser->getId()) {
       throw new Exception($errorMessage);
     }
+  }
+
+  /**
+   * @param \Econemon\Bootsy\DatabaseBundle\Service\DatabaseService $databaseService
+   */
+  function setDatabaseService(DatabaseService $databaseService = NULL)
+  {
+    $this->databaseService = $databaseService;
+  }
+
+  /**
+   * @param \Econemon\Bootsy\ApplicationBundle\Service\TemplateMailerInterface $bootsyMailer
+   */
+  public function setBootsyMailer($bootsyMailer)
+  {
+    $this->bootsyMailer = $bootsyMailer;
   }
 }
